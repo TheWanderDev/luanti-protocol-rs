@@ -593,7 +593,7 @@ pub struct Inventory {
 enum SlotUpdate {
     Keep,
     Empty,
-    Item(ItemStack),
+    Item(Box<ItemStack>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -661,7 +661,7 @@ impl Inventory {
                                 .cloned()
                                 .flatten(),
                             SlotUpdate::Empty => None,
-                            SlotUpdate::Item(item) => Some(item),
+                            SlotUpdate::Item(item) => Some(*item),
                         };
 
                         new_slots.push(value);
@@ -882,9 +882,9 @@ fn parse_inventory_text(
                 return Err(ProtocolError::InvalidInventory("empty item stack"));
             }
 
-            slots.push(SlotUpdate::Item(ItemStack::from_serialized(
+            slots.push(SlotUpdate::Item(Box::new(ItemStack::from_serialized(
                 value.to_owned(),
-            )?));
+            )?)));
         } else if protocol_version < PROTOCOL_INCREMENTAL_INVENTORY {
             return Err(ProtocolError::InvalidInventory("unknown inventory entry"));
         }

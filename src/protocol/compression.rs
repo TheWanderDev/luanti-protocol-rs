@@ -17,7 +17,7 @@ pub fn decompress_zstd_frame(compressed: &[u8]) -> Result<Vec<u8>, &'static str>
         .single_frame();
     let mut output = Vec::new();
 
-    (&mut decoder)
+    (decoder)
         .read_to_end(&mut output)
         .map_err(|_| "zstd decompression failed")?;
 
