@@ -51,4 +51,4 @@ fn formspec_and_active_object_decoders_reject_empty_input() {
     assert_eq!(decode_active_object_messages(&[]), Ok(Vec::new()));
 }
 
-/* perhaps we can continue another time XD */ 
+/* perhaps we can continue another time XD */

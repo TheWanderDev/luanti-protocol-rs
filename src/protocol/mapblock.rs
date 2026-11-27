@@ -219,11 +219,7 @@ fn decode_map_block_pre29(
 
     let mut node_reader = PacketReader::new(&node_data);
 
-    let nodes = decode_node_data(
-        &mut node_reader,
-        content_width,
-        params_width,
-    )?;
+    let nodes = decode_node_data(&mut node_reader, content_width, params_width)?;
 
     if !node_reader.is_empty() {
         return Err(ProtocolError::InvalidMapBlock(
@@ -274,11 +270,7 @@ pub fn decode_map_block(
         let content_width = block_reader.read_u8()?;
         let params_width = block_reader.read_u8()?;
 
-        let nodes = decode_node_data(
-            &mut block_reader,
-            content_width,
-            params_width,
-        )?;
+        let nodes = decode_node_data(&mut block_reader, content_width, params_width)?;
 
         let metadata_data = block_reader.read_bytes(block_reader.remaining())?.to_vec();
 

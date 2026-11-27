@@ -26,14 +26,14 @@ jobs:
       - name: Install stable Rust
         run: rustup toolchain install stable --profile minimal --component rustfmt --component clippy
 
-      - name: Check formatting
-        run: cargo +stable fmt --all -- --check
+            - name: Check formatting
+        run: cargo fmt --all -- --check
 
       - name: Check all targets
-        run: cargo +stable check --all-targets
+        run: cargo check --all-targets
 
       - name: Run Clippy
-        run: cargo +stable clippy --all-targets -- -D warnings
+        run: cargo clippy --all-targets -- -D warnings
 
       - name: Run existing tests
-        run: cargo +stable test --lib --tests
+        run: cargo test --lib --tests

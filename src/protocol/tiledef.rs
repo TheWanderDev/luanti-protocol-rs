@@ -575,13 +575,8 @@ pub fn decode_content_features_tiles(
         read_simple_sound_spec(&mut reader)?,
         read_simple_sound_spec(&mut reader)?,
     ];
-    let movement = read_movement_metadata_tail(
-        &mut reader,
-        drawtype,
-        alpha,
-        liquid_type,
-        liquid_viscosity,
-    )?;
+    let movement =
+        read_movement_metadata_tail(&mut reader, drawtype, alpha, liquid_type, liquid_viscosity)?;
 
     Ok(ContentFeaturesTiles {
         groups,

@@ -1,9 +1,7 @@
 use bytes::BufMut;
 use std::hint::black_box;
 
-use criterion::{
-    BatchSize, BenchmarkId, Criterion, Throughput, criterion_group, criterion_main,
-};
+use criterion::{BatchSize, BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use luanti_protocol_rs::protocol::packet::{decode_datagram, encode_header};
 
 fn packet_decode(c: &mut Criterion) {
@@ -16,17 +14,13 @@ fn packet_decode(c: &mut Criterion) {
         let datagram = datagram.freeze();
 
         group.throughput(Throughput::Bytes(datagram.len() as u64));
-        group.bench_with_input(
-            BenchmarkId::new("original", size),
-            &datagram,
-            |b, input| {
-                b.iter_batched(
-                    || input.clone(),
-                    |packet| black_box(decode_datagram(black_box(packet))),
-                    BatchSize::SmallInput,
-                );
-            },
-        );
+        group.bench_with_input(BenchmarkId::new("original", size), &datagram, |b, input| {
+            b.iter_batched(
+                || input.clone(),
+                |packet| black_box(decode_datagram(black_box(packet))),
+                BatchSize::SmallInput,
+            );
+        });
     }
 
     group.finish();

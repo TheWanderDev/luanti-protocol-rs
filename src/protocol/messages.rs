@@ -256,7 +256,7 @@ impl InitMessage {
         if !reader.is_empty() || protocol_min > protocol_max || player_name.is_empty() {
             return Err(ProtocolError::InvalidHello);
         }
-      
+
         if serialization_version < 27 {
             return Err(ProtocolError::InvalidSerializationVersion(
                 serialization_version,

@@ -186,7 +186,6 @@ impl FormspecDocument {
             }
 
             elements.push(element);
-
         }
 
         Ok(Self { elements })

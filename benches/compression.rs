@@ -30,18 +30,22 @@ fn compression(c: &mut Criterion) {
     group.throughput(Throughput::Bytes(input.len() as u64));
     group.bench_with_input(BenchmarkId::new("zstd", input.len()), &zstd, |b, data| {
         b.iter(|| {
-            black_box(luanti_protocol_rs::protocol::compression::decompress_zstd_limited(
-                black_box(data.as_slice()),
-                input.len(),
-            ))
+            black_box(
+                luanti_protocol_rs::protocol::compression::decompress_zstd_limited(
+                    black_box(data.as_slice()),
+                    input.len(),
+                ),
+            )
         });
     });
     group.bench_with_input(BenchmarkId::new("zlib", input.len()), &zlib, |b, data| {
         b.iter(|| {
-            black_box(luanti_protocol_rs::protocol::compression::decompress_zlib_frame_limited(
-                black_box(data.as_slice()),
-                input.len(),
-            ))
+            black_box(
+                luanti_protocol_rs::protocol::compression::decompress_zlib_frame_limited(
+                    black_box(data.as_slice()),
+                    input.len(),
+                ),
+            )
         });
     });
     group.finish();

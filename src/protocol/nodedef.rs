@@ -253,13 +253,12 @@ impl NodeRegistry {
             return Some(Vec::new());
         }
 
-        let shape = if definition.collision_box.kind == 1
-            && definition.collision_box.parts.is_empty()
-        {
-            &definition.node_box
-        } else {
-            &definition.collision_box
-        };
+        let shape =
+            if definition.collision_box.kind == 1 && definition.collision_box.parts.is_empty() {
+                &definition.node_box
+            } else {
+                &definition.collision_box
+            };
         let mut parts = match shape.kind {
             0 => vec![NodeBoxPart {
                 min: [-0.5; 3],

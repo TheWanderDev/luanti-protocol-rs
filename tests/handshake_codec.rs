@@ -1,7 +1,7 @@
 use luanti_protocol_rs::protocol::commands::ToServerCommand;
 use luanti_protocol_rs::protocol::constant::{
-    AUTH_MECHANISM_LEGACY_PASSWORD, AUTH_MECHANISM_SRP, MAX_PROTOCOL_VERSION,
-    MIN_PROTOCOL_VERSION, SERIALIZATION_VERSION,
+    AUTH_MECHANISM_LEGACY_PASSWORD, AUTH_MECHANISM_SRP, MAX_PROTOCOL_VERSION, MIN_PROTOCOL_VERSION,
+    SERIALIZATION_VERSION,
 };
 use luanti_protocol_rs::protocol::messages::{HelloMessage, InitMessage};
 
@@ -21,7 +21,10 @@ fn init_message_matches_wire_layout_and_round_trips() {
     let mut expected_prefix = vec![0x00, 0x02, SERIALIZATION_VERSION, 0x00, 0x00];
     expected_prefix.extend_from_slice(&MIN_PROTOCOL_VERSION.to_be_bytes());
     expected_prefix.extend_from_slice(&MAX_PROTOCOL_VERSION.to_be_bytes());
-    assert_eq!(&encoded[..expected_prefix.len()], expected_prefix.as_slice());
+    assert_eq!(
+        &encoded[..expected_prefix.len()],
+        expected_prefix.as_slice()
+    );
     assert_eq!(InitMessage::decode(&encoded), Ok(message));
 }
 

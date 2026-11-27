@@ -120,10 +120,7 @@ fn decode_body(
             let chunk_count = u16::from_be_bytes([data[3], data[4]]);
             let chunk_number = u16::from_be_bytes([data[5], data[6]]);
 
-            if chunk_count == 0
-                || chunk_count > MAX_SPLIT_CHUNKS
-                || chunk_number >= chunk_count
-            {
+            if chunk_count == 0 || chunk_count > MAX_SPLIT_CHUNKS || chunk_number >= chunk_count {
                 return Err(ProtocolError::InvalidSplitPacket);
             }
 

@@ -249,9 +249,7 @@ pub fn decode_media_bunch(data: &[u8], protocol_version: u16) -> Result<MediaBun
         };
 
         if media_length == 0 || media_length > max_media_length {
-            return Err(ProtocolError::InvalidMedia(
-                "invalid media payload size",
-            ));
+            return Err(ProtocolError::InvalidMedia("invalid media payload size"));
         }
 
         let media_data = reader.read_bytes(media_length)?;

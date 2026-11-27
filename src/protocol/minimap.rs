@@ -34,14 +34,14 @@ pub fn decode_minimap_modes(data: &[u8]) -> Result<MinimapModesUpdate, ProtocolE
         let label = decode_string(reader.read_string16()?);
         let size = reader.read_u16()?;
         let texture = decode_string(reader.read_string16()?);
-        let scale = reader.read_u16()?;        
+        let scale = reader.read_u16()?;
 
         modes.push(MinimapMode {
             mode_type,
             label,
             size,
             texture,
-            scale,  
+            scale,
         });
     }
 

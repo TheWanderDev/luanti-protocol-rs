@@ -507,8 +507,8 @@ fn decode_pointability_map(
 
         let raw_type = reader.read_u8()?;
 
-        let pointability = PointabilityType::from_repr(raw_type)
-            .unwrap_or(PointabilityType::Pointable);
+        let pointability =
+            PointabilityType::from_repr(raw_type).unwrap_or(PointabilityType::Pointable);
 
         if seen.insert(name.clone(), ()).is_some() {
             return Err(ProtocolError::InvalidItemDef("duplicate pointability rule"));
@@ -727,24 +727,22 @@ fn encode_item_image_def(
         legacy_name = match &image.animation {
             TileAnimation::None => image.name.clone(),
             TileAnimation::VerticalFrames {
-                aspect_w,
-                aspect_h,
-                ..
+                aspect_w, aspect_h, ..
             } => {
                 if *aspect_w == 0 || *aspect_h == 0 {
                     return Err(ProtocolError::InvalidItemDef(
                         "invalid vertical image animation",
                     ));
                 }
-                let escaped_name = image.name.replace('\\', "\\\\")
+                let escaped_name = image
+                    .name
+                    .replace('\\', "\\\\")
                     .replace(':', "\\:")
                     .replace('^', "\\^");
                 format!("[combine:{aspect_w}x{aspect_h}:0,0={escaped_name}")
             }
             TileAnimation::Sheet2d {
-                frames_w,
-                frames_h,
-                ..
+                frames_w, frames_h, ..
             } => {
                 if *frames_w == 0 || *frames_h == 0 {
                     return Err(ProtocolError::InvalidItemDef(
