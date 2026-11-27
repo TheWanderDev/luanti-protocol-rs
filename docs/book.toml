@@ -1,0 +1,26 @@
+
+[book]
+title = "luanti-protocol-rs documentation"
+description = "luanti-protocol-rs technical documentation and API reference."
+language = "en"
+src = "src"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+additional-css = ["theme/style.css"]
+additional-js = ["theme/additional.js"]
+site-url = "/guide/"
+no-section-label = true
+
+[output.html.search]
+enable = true
+limit-results = 30
+
+[build]
+create-missing = false
+
+[preprocessor.rustdoc-link-resolver]
+command = "python3 tools/rustdoc_link_resolver.py"
+renderer = ["html"]
+after = ["links"]

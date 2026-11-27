@@ -1,0 +1,101 @@
+
+:root {
+    --brand: #60a5fa;
+    --brand-hover: #93c5fd;
+    --border: #303b4d;
+    --surface-raised: #1e293b;
+}
+
+body {
+    font-family: Inter, "Segoe UI", sans-serif;
+    letter-spacing: -0.012em;
+}
+
+#menu-bar {
+    border-bottom: 1px solid var(--border);
+}
+
+#sidebar {
+    border-right: 1px solid var(--border);
+}
+
+#sidebar .chapter li a {
+    margin: 2px 8px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    transition: background 120ms ease;
+}
+
+#sidebar .chapter li a:hover {
+    background: var(--surface-raised);
+    color: var(--brand);
+}
+
+.content {
+    max-width: 960px;
+    padding: 36px 40px;
+}
+
+.content h1,
+.content h2,
+.content h3 {
+    font-weight: 650;
+    letter-spacing: -0.035em;
+}
+
+.content h1 {
+    font-size: 2.3rem;
+}
+
+.content h2 {
+    margin-top: 2.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.content a {
+    color: var(--brand);
+    text-decoration: none;
+}
+
+.content a:hover {
+    color: var(--brand-hover);
+    text-decoration: underline;
+}
+
+.content pre {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.content code {
+    font-family: "JetBrains Mono", monospace;
+}
+
+.content table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.content th,
+.content td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    text-align: left;
+}
+
+.content th {
+    background: var(--surface-raised);
+}
+
+@media (max-width: 768px) {
+    .content {
+        padding: 24px 18px;
+    }
+
+    .content h1 {
+        font-size: 1.9rem;
+    }
+}

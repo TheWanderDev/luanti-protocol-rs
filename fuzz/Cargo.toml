@@ -1,0 +1,51 @@
+[package]
+name = "luanti-protocol-rs-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+bytes = "1.12.2"
+luanti-protocol-rs = { path = ".." }
+
+[[bin]]
+name = "datagram"
+path = "fuzz_targets/datagram.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "active_objects"
+path = "fuzz_targets/active_objects.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "world_data"
+path = "fuzz_targets/world_data.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "definitions"
+path = "fuzz_targets/definitions.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "server_payloads"
+path = "fuzz_targets/server_payloads.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]
+members = ["."]

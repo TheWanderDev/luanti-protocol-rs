@@ -1,0 +1,5 @@
+/target
+/docs/book
+/docs/src/api
+a.py
+Cargo.lock

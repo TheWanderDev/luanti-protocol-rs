@@ -1,0 +1,48 @@
+pub const PROTOCOL_ID: u32 = 0x4f45_7403;
+
+pub const PEER_ID_INEXISTENT: u16 = 0;
+pub const PEER_ID_SERVER: u16 = 1;
+pub const CHANNEL_COUNT: usize = 3;
+pub const CHANNEL_DEFAULT: u8 = 0;
+
+pub const INITIAL_SEQUENCE_NUMBER: u16 = 65500;
+
+pub const MIN_PROTOCOL_VERSION: u16 = 37;
+pub const MAX_PROTOCOL_VERSION: u16 = 54;
+
+pub const SERIALIZATION_VERSION: u8 = 29;
+
+pub const BASE_HEADER_SIZE: usize = 7;
+pub const MTP_MAX_PACKET_SIZE: usize = 512;
+pub const MAX_DATAGRAM_SIZE: usize = 65_507;
+
+pub const AUTH_MECHANISM_LEGACY_PASSWORD: u32 = 1 << 0;
+pub const AUTH_MECHANISM_SRP: u32 = 1 << 1;
+pub const AUTH_MECHANISM_FIRST_SRP: u32 = 1 << 2;
+
+pub const SRP_SALT_LENGTH: usize = 16;
+pub const SRP_PRIVATE_LENGTH: usize = 32;
+pub const SRP_HASH_LENGTH: usize = 32;
+pub const SRP_GROUP_LENGTH: usize = 256;
+
+pub const CLIENT_VERSION_MAJOR: u8 = 5;
+pub const CLIENT_VERSION_MINOR: u8 = 18;
+pub const CLIENT_VERSION_PATCH: u8 = 0;
+pub const CLIENT_VERSION_STRING: &str = "luanti-client-rs";
+pub const FORMSPEC_API_VERSION: u16 = 12;
+pub const MAX_RELIABLE_WINDOW_SIZE: usize = 0x8000;
+pub const MAX_RELIABLE_WINDOW_SIZE_SEND: usize = 2_048;
+pub const START_RELIABLE_WINDOW_SIZE: usize = 64;
+pub const MIN_RELIABLE_WINDOW_SIZE: usize = 32;
+
+pub const MAX_SPLIT_CHUNKS: u16 = MAX_RELIABLE_WINDOW_SIZE as u16;
+
+pub const UNRELIABLE_SPLIT_CHUNK_SIZE: usize = MTP_MAX_PACKET_SIZE - BASE_HEADER_SIZE - 7;
+pub const RELIABLE_SPLIT_CHUNK_SIZE: usize = MTP_MAX_PACKET_SIZE - BASE_HEADER_SIZE - 3 - 7;
+
+pub const MAX_UNRELIABLE_SPLIT_PACKET_PAYLOAD_SIZE: usize =
+    MAX_SPLIT_CHUNKS as usize * UNRELIABLE_SPLIT_CHUNK_SIZE;
+pub const MAX_RELIABLE_SPLIT_PACKET_PAYLOAD_SIZE: usize =
+    MAX_SPLIT_CHUNKS as usize * RELIABLE_SPLIT_CHUNK_SIZE;
+pub const MAX_SPLIT_PACKET_PAYLOAD_SIZE: usize =
+    MAX_RELIABLE_WINDOW_SIZE * MTP_MAX_PACKET_SIZE + 2;
