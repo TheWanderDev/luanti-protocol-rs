@@ -1,6 +1,6 @@
 [package]
 name = "luanti-protocol-rs"
-version = "0.5.181"
+version = "0.5.182"
 edition = "2024"
 description = "luanti protocol rust implementation"
 license = "LGPL-3.0-only"
