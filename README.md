@@ -10,8 +10,8 @@ A rust implementation of the Luanti network protocol, providing the protocol fou
     <img src="https://img.shields.io/badge/API_Reference-Rustdoc-orange?style=for-the-badge&logo=rust&logoColor=white" alt="API Reference">
   </a>
   <a href="https://crates.io/crates/luanti-protocol-rs">
-    <img src="https://img.shields.io/crates/v/luanti-protocol-rs.svg?style=for-the-badge" alt="Crates.io">
-  </a>
+  <img src="https://img.shields.io/crates/v/luanti-protocol-rs?logo=rust&style=for-the-badge" alt="Crates.io">
+</a>
 </p>
 
 ## Overview
