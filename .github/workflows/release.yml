@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    environment:
+      name: crates-io
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Install stable Rust
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Validate release tag
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+
+          metadata = json.loads(
+              subprocess.check_output(
+                  ["cargo", "+stable", "metadata", "--no-deps", "--format-version", "1"],
+                  text=True,
+              )
+          )
+          versions = [
+              package["version"]
+              for package in metadata["packages"]
+              if package["name"] == "luanti-protocol-rs"
+          ]
+          if len(versions) != 1:
+              raise SystemExit("Could not identify the package version")
+          if os.environ["RELEASE_TAG"] != f"v{versions[0]}":
+              raise SystemExit("Release tag does not match Cargo.toml version")
+          PY
+
+      - name: Validate package
+        run: cargo +stable publish --dry-run
+
+      - name: Authenticate with crates.io
+        id: auth
+        uses: rust-lang/crates-io-auth-action@v1
+
+      - name: Publish crate
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: cargo +stable publish

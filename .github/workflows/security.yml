@@ -1,0 +1,59 @@
+
+name: Dependency Security
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "deny.toml"
+      - "rust-toolchain.toml"
+      - ".github/workflows/security.yml"
+
+  pull_request:
+    branches: [main]
+    paths:
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "deny.toml"
+      - "rust-toolchain.toml"
+      - ".github/workflows/security.yml"
+
+  schedule:
+    - cron: "17 3 * * 1"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Cargo Deny
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install stable \
+            --profile minimal \
+            --component clippy \
+            --component rustfmt
+
+      - name: Install cargo-deny
+        run: |
+          cargo +stable install cargo-deny \
+            --version 0.22.1 \
+            --locked
+
+      - name: Check dependencies
+        run: cargo +stable deny check

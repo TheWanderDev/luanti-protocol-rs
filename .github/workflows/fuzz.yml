@@ -1,0 +1,63 @@
+name: Fuzzing
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fuzz-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        target:
+          - active_objects
+          - datagram
+          - definitions
+          - server_payloads
+          - world_data
+
+    env:
+      FUZZ_SECONDS: ${{ github.event_name == 'schedule' && 900 || github.event_name == 'pull_request' && 45 || 120 }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Install Rust toolchains
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup toolchain install nightly --profile minimal
+
+      - name: Install cargo-fuzz
+        run: cargo +stable install cargo-fuzz --version 0.13.2 --locked
+
+      - name: Build fuzz target
+        run: cargo +nightly fuzz build ${{ matrix.target }}
+
+      - name: Run fuzz target
+        run: cargo +nightly fuzz run ${{ matrix.target }} -- -max_total_time=${FUZZ_SECONDS}
+
+      - name: Upload crash artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: fuzz-${{ matrix.target }}-${{ github.sha }}
+          path: fuzz/artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
