@@ -2,10 +2,9 @@
 name = "luanti-protocol-rs"
 version = "0.5.18"
 edition = "2024"
-readme = "README.md"
 description = "luanti protocol rust implementation"
-documentation = "https://docs.rs/luanti-protocol-rs"
 license = "LGPL-3.0-only"
+readme = "README.md"
 keywords = ["protocol", "networking", "serialization", "binary", "codec"]
 categories = ["network-programming", "encoding"]
 
