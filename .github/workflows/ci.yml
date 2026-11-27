@@ -1,44 +1,46 @@
 name: CI
 
 on:
-push:
-branches: [main]
-pull_request:
-branches: [main]
-workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
-contents: read
+  contents: read
 
 concurrency:
-group: ci-${{ github.workflow }}-${{ github.ref }}
-cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-validate:
-name: Validate Rust
-runs-on: ubuntu-latest
-timeout-minutes: 30
+  validate:
+    name: Validate Rust
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
-steps:
-  - name: Checkout
-    uses: actions/checkout@v7.0.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
 
-  - name: Show toolchain
-    run: |
-      rustc --version
-      cargo --version
-      rustfmt --version
-      cargo clippy --version
+      - name: Show toolchain
+        run: |
+          rustc --version
+          cargo --version
+          rustfmt --version
+          cargo clippy --version
 
-  - name: Check formatting
-    run: cargo fmt --all -- --check
+      - name: Check formatting
+        run: cargo fmt --all -- --check
 
-  - name: Check all targets
-    run: cargo check --all-targets
+      - name: Check all targets
+        run: cargo check --all-targets
 
-  - name: Run Clippy
-    run: cargo clippy --all-targets -- -D warnings
+      - name: Run Clippy
+        run: cargo clippy --all-targets -- -D warnings
 
-  - name: Run existing tests
-    run: cargo test --lib --tests
+      - name: Run existing tests
+        run: cargo test --lib --tests
