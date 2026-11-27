@@ -32,7 +32,7 @@ Add the dependency to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-luanti-protocol-rs = "0.5.18"
+luanti-protocol-rs = "0.5.181"
 ```
 
 ## Documentation
