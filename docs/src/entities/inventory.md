@@ -1,9 +1,11 @@
 # Inventory
 
-Inventory text and update structures are implemented in [`crate::protocol::inventory`]. The main data types are [`crate::protocol::inventory::ItemStack`], [`crate::protocol::inventory::InventoryList`], [`crate::protocol::inventory::Inventory`], and [`crate::protocol::inventory::InventoryUpdate`].
+Server inventory updates are exposed as `protocol::messages::to_client::InventoryUpdate` and
+implement `DecodeMessageWithProtocolVersion`. Pass the negotiated protocol version when decoding.
 
-`ItemStack` models an item name, count, wear, and metadata representation as defined by the parser. Inventory lists hold named collections of stacks and their declared size; an inventory groups lists. `decode_inventory` parses the server inventory payload and accepts the protocol version because the wire representation changes across versions.
+Client inventory actions are exposed as `protocol::messages::to_server::InventoryAction` and
+implement `EncodeMessage`.
 
-The module also contains parsing and formatting support for item-stack text and metadata. Consult the generated API reference for the exact public methods and fields; the text representation is not interchangeable with the binary packet framing layer.
-
-This crate parses inventory state. It does not apply inventory actions to server state or predict whether a requested move/craft operation will be accepted.
+The inventory data models and action models remain available from `protocol::inventory` and
+`protocol::inventory_action`. Command-level message wrappers are the preferred entry points when
+handling network application messages because they validate the command ID.

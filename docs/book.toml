@@ -10,7 +10,7 @@ default-theme = "navy"
 preferred-dark-theme = "navy"
 additional-css = ["theme/style.css"]
 additional-js = ["theme/additional.js"]
-site-url = "/luanti-protocol-rs/"
+site-url = "/guide/"
 no-section-label = true
 
 [output.html.search]

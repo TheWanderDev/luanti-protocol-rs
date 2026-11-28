@@ -16,6 +16,6 @@
 
 ## Bounds and errors
 
-A read advances the cursor after the requested range is available. Out-of-range reads return [`crate::ProtocolError::Truncated`]. Length conversion failures return `InvalidStringLength`; malformed UTF-16 returns `InvalidWideString`.
+A read advances the cursor only after the requested range is available. Out-of-range reads return [`crate::ProtocolError::Truncated`]. Length conversion failures return `InvalidStringLength`; malformed UTF-16 returns `InvalidWideString`.
 
 `read_string16` and `read_string32` deliberately return bytes, not `String`. The payload decoder decides whether a particular field requires UTF-8, lossy UTF-8, or another interpretation.

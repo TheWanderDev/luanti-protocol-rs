@@ -76,7 +76,7 @@ fn read_string16(reader: &mut PacketReader<'_>) -> Result<String, ProtocolError>
     String::from_utf8(bytes.to_vec()).map_err(|_| ProtocolError::InvalidHud("string is not UTF-8"))
 }
 
-pub fn decode_hud_add(data: &[u8], protocol_version: u16) -> Result<HudAdd, ProtocolError> {
+pub(crate) fn decode_hud_add(data: &[u8], protocol_version: u16) -> Result<HudAdd, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let id = reader.read_u32()?;
@@ -155,7 +155,7 @@ pub fn decode_hud_add(data: &[u8], protocol_version: u16) -> Result<HudAdd, Prot
     })
 }
 
-pub fn decode_hud_remove(data: &[u8]) -> Result<u32, ProtocolError> {
+pub(crate) fn decode_hud_remove(data: &[u8]) -> Result<u32, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let id = reader.read_u32()?;
@@ -167,7 +167,10 @@ pub fn decode_hud_remove(data: &[u8]) -> Result<u32, ProtocolError> {
     Ok(id)
 }
 
-pub fn decode_hud_change(data: &[u8], protocol_version: u16) -> Result<HudChange, ProtocolError> {
+pub(crate) fn decode_hud_change(
+    data: &[u8],
+    protocol_version: u16,
+) -> Result<HudChange, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let id = reader.read_u32()?;

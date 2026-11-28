@@ -1,18 +1,19 @@
 # Protocol Versions
 
-The uploaded source snapshot declares these values in [`crate::protocol::constant`]:
+The current source advertises network protocol versions **37–55**, serialization version **29**,
+and formspec API version **12**. These values are separate compatibility dimensions.
 
-| Constant | Snapshot value | Meaning in this crate |
+| Value | Current setting | Meaning |
 |---|---:|---|
-| `MIN_PROTOCOL_VERSION` | 37 | Lowest protocol version declared by this client codec |
-| `MAX_PROTOCOL_VERSION` | 54 | Highest protocol version declared by this client codec |
-| `SERIALIZATION_VERSION` | 29 | Serialization version advertised by the snapshot |
-| `FORMSPEC_API_VERSION` | 12 | Forms API version advertised by the snapshot |
-| `ZSTD_PROTOCOL_VERSION` | 48 | Compression selection threshold in the compression module |
-| `CLIENT_VERSION_MAJOR` | 5 | Client version major component |
-| `CLIENT_VERSION_MINOR` | 18 | Client version minor component |
-| `CLIENT_VERSION_PATCH` | 0 | Client version patch component |
+| Minimum protocol | 37 | Lowest network protocol accepted by this source |
+| Maximum protocol | 55 | Highest network protocol advertised by this source |
+| Serialization version | 29 | Map and node serialization format version |
+| Formspec API | 12 | Forms API capability reported by the client |
 
-The negotiated protocol version is a session value selected during the handshake. It is not necessarily equal to `MAX_PROTOCOL_VERSION`. Version-aware decoders must receive the negotiated value.
+The constants are defined in `protocol::constant`. The selected protocol version is negotiated
+with the server during the handshake; version-aware message decoders must receive that negotiated
+value rather than the maximum supported value.
 
-These are source-snapshot declarations, not a claim that every version boundary has been independently verified against the current upstream send/receive implementation. See [Upstream Compatibility](upstream-compatibility.md).
+Protocol 55 adds the `move_camera` attachment flag to generic active-object `ATTACH_TO` data. The
+flag byte uses `0x01` for `visible_on_attach` and `0x02` for `move_camera`. Older protocol versions
+retain the visibility-only flag semantics.

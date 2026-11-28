@@ -1,7 +1,13 @@
 # Chat
 
-Chat payload types and codecs are in [`crate::protocol::chat`]. [`crate::protocol::chat::ChatMessage`] contains a message type, sender, message body, and timestamp.
+Chat application messages are exposed through the typed message API.
 
-`ChatMessageType` has four wire values: `Raw`, `Normal`, `Announce`, and `System`. `decode_chat_message` requires message format version 1, reads the type, decodes sender and message as UTF-16BE strings, reads a `u64` timestamp, and rejects trailing bytes. Unknown versions and message types return dedicated protocol errors.
+- `protocol::messages::to_client::ChatMessage` decodes server chat messages and also implements
+  `EncodeMessage` for its wire representation.
+- `protocol::messages::to_server::ChatMessage` encodes client chat text.
 
-`encode_chat_message` creates a client chat command containing a wide string. It encodes the outbound text payload; it does not assign a sender name or timestamp.
+Import `DecodeMessage` or `EncodeMessage` as appropriate. The chat payload codec functions are
+crate-private implementation details; downstream code should use these public message types.
+
+Chat messages are application messages. MTP datagram framing and transport delivery are outside
+this module.

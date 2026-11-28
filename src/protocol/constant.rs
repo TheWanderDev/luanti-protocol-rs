@@ -8,7 +8,7 @@ pub const CHANNEL_DEFAULT: u8 = 0;
 pub const INITIAL_SEQUENCE_NUMBER: u16 = 65500;
 
 pub const MIN_PROTOCOL_VERSION: u16 = 37;
-pub const MAX_PROTOCOL_VERSION: u16 = 54;
+pub const MAX_PROTOCOL_VERSION: u16 = 55;
 
 pub const SERIALIZATION_VERSION: u8 = 29;
 
@@ -26,9 +26,9 @@ pub const SRP_HASH_LENGTH: usize = 32;
 pub const SRP_GROUP_LENGTH: usize = 256;
 
 pub const CLIENT_VERSION_MAJOR: u8 = 5;
-pub const CLIENT_VERSION_MINOR: u8 = 18;
+pub const CLIENT_VERSION_MINOR: u8 = 19;
 pub const CLIENT_VERSION_PATCH: u8 = 0;
-pub const CLIENT_VERSION_STRING: &str = "luanti-client-rs";
+pub const CLIENT_VERSION_STRING: &str = "5.19.0-dev";
 pub const FORMSPEC_API_VERSION: u16 = 12;
 pub const MAX_RELIABLE_WINDOW_SIZE: usize = 0x8000;
 pub const MAX_RELIABLE_WINDOW_SIZE_SEND: usize = 2_048;

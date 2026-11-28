@@ -6,4 +6,4 @@ Domain variants cover chat, player values, sound, map blocks, node definitions, 
 
 The decompression module is an exception: its public functions return `Result<_, &'static str>`. Callers that integrate decompression with a payload decoder should map those messages into an appropriate domain error.
 
-Treat decoder errors as unsupported input. Do not continue parsing a payload after an error, and do not silently substitute default values for missing required fields.
+Treat decoder errors as malformed or unsupported input. Do not continue parsing a payload after an error, and do not silently substitute default values for missing required fields.

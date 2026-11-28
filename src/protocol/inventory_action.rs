@@ -144,7 +144,7 @@ fn serialize_action(action: &InventoryAction) -> Result<String, ProtocolError> {
     Ok(value)
 }
 
-pub fn encode_inventory_action(action: &InventoryAction) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_inventory_action(action: &InventoryAction) -> Result<Bytes, ProtocolError> {
     let serialized = serialize_action(action)?;
 
     let mut writer = PacketWriter::new();

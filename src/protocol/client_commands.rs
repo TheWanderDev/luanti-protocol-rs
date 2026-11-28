@@ -5,11 +5,11 @@ use crate::errors::ProtocolError;
 use crate::protocol::commands::ToServerCommand;
 use crate::protocol::writer::PacketWriter;
 
-pub fn encode_got_blocks(positions: &[I16Vec3]) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_got_blocks(positions: &[I16Vec3]) -> Result<Bytes, ProtocolError> {
     encode_block_positions(ToServerCommand::GotBlocks, positions)
 }
 
-pub fn encode_deleted_blocks(positions: &[I16Vec3]) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_deleted_blocks(positions: &[I16Vec3]) -> Result<Bytes, ProtocolError> {
     encode_block_positions(ToServerCommand::DeletedBlocks, positions)
 }
 
@@ -32,7 +32,7 @@ fn encode_block_positions(
     Ok(writer.into_inner())
 }
 
-pub fn encode_removed_sounds(sound_ids: &[i32]) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_removed_sounds(sound_ids: &[i32]) -> Result<Bytes, ProtocolError> {
     let count = u16::try_from(sound_ids.len())
         .map_err(|_| ProtocolError::InvalidSound("too many removed sound IDs"))?;
     let capacity = sound_ids.len().saturating_mul(4).saturating_add(4);
@@ -48,7 +48,7 @@ pub fn encode_removed_sounds(sound_ids: &[i32]) -> Result<Bytes, ProtocolError> 
 }
 
 #[must_use]
-pub fn encode_damage(damage: u16) -> Bytes {
+pub(crate) fn encode_damage(damage: u16) -> Bytes {
     let mut writer = PacketWriter::with_capacity(4);
     writer.write_u16(u16::from(ToServerCommand::Damage));
     writer.write_u16(damage);
@@ -56,7 +56,7 @@ pub fn encode_damage(damage: u16) -> Bytes {
 }
 
 #[must_use]
-pub fn encode_respawn_legacy() -> Bytes {
+pub(crate) fn encode_respawn_legacy() -> Bytes {
     let mut writer = PacketWriter::with_capacity(2);
     writer.write_u16(u16::from(ToServerCommand::RespawnLegacy));
     writer.into_inner()
@@ -73,7 +73,7 @@ pub struct ClientInfoUpdate {
     pub touch_controls: bool,
 }
 
-pub fn encode_update_client_info(update: ClientInfoUpdate) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_update_client_info(update: &ClientInfoUpdate) -> Result<Bytes, ProtocolError> {
     let values = [
         update.gui_scaling,
         update.hud_scaling,

@@ -6,7 +6,8 @@ use crate::protocol::writer::PacketWriter;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
 use bytes::Bytes;
-const MAX_MEDIA_FILE_SIZE: usize = 16_700_000;
+/// Maximum media file size accepted by the protocol decoder.
+pub const MAX_MEDIA_FILE_SIZE: usize = 16_700_000;
 const MAX_ANNOUNCE_SIZE: usize = 16_700_000;
 const MEDIA_NAME_ALLOWED_CHARS: &[u8] =
     b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-";
@@ -69,7 +70,7 @@ fn validate_media_name(name: &str) -> Result<(), ProtocolError> {
     Ok(())
 }
 
-pub fn decode_media_push(
+pub(crate) fn decode_media_push(
     data: &[u8],
     protocol_version: u16,
 ) -> Result<MediaPushUpdate, ProtocolError> {
@@ -81,18 +82,19 @@ pub fn decode_media_push(
         .map_err(|_| ProtocolError::InvalidMedia("invalid media SHA-1 digest"))?;
     let filename = decode_utf8(reader.read_string16()?)?;
     validate_media_name(&filename)?;
-    let cached = reader.read_u8()? != 0;
-
-    let (callback_token, file_data) = if protocol_version >= 40 {
-        (Some(reader.read_u32()?), None)
+    let (cached, callback_token, file_data) = if protocol_version >= 40 {
+        let cached = reader.read_u8()? != 0;
+        let callback_token = reader.read_u32()?;
+        (cached, Some(callback_token), None)
     } else {
+        let cached = reader.read_u8()? != 0;
         let file_data = reader.read_string32()?.to_vec();
         if file_data.is_empty() || file_data.len() > MAX_MEDIA_FILE_SIZE {
             return Err(ProtocolError::InvalidMedia(
                 "invalid legacy media payload size",
             ));
         }
-        (None, Some(file_data))
+        (cached, None, Some(file_data))
     };
 
     if !reader.is_empty() {
@@ -110,7 +112,7 @@ pub fn decode_media_push(
     })
 }
 
-pub fn decode_announce_media(
+pub(crate) fn decode_announce_media(
     data: &[u8],
     protocol_version: u16,
 ) -> Result<AnnounceMedia, ProtocolError> {
@@ -215,7 +217,10 @@ pub fn decode_announce_media(
     Ok(AnnounceMedia { files, remote_url })
 }
 
-pub fn decode_media_bunch(data: &[u8], protocol_version: u16) -> Result<MediaBunch, ProtocolError> {
+pub(crate) fn decode_media_bunch(
+    data: &[u8],
+    protocol_version: u16,
+) -> Result<MediaBunch, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let total_bunches = reader.read_u16()?;
@@ -275,7 +280,7 @@ pub fn decode_media_bunch(data: &[u8], protocol_version: u16) -> Result<MediaBun
     })
 }
 
-pub fn encode_request_media(filenames: &[String]) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_request_media(filenames: &[String]) -> Result<Bytes, ProtocolError> {
     let count = u16::try_from(filenames.len()).map_err(|_| ProtocolError::InvalidStringLength)?;
 
     let mut writer = PacketWriter::new();
@@ -294,7 +299,7 @@ pub fn encode_request_media(filenames: &[String]) -> Result<Bytes, ProtocolError
     Ok(writer.into_inner())
 }
 
-pub fn encode_have_media(tokens: &[u32]) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_have_media(tokens: &[u32]) -> Result<Bytes, ProtocolError> {
     let count = u8::try_from(tokens.len()).map_err(|_| ProtocolError::InvalidStringLength)?;
 
     let mut writer = PacketWriter::with_capacity(3 + tokens.len() * 4);

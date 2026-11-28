@@ -1,17 +1,23 @@
 # Forms and Formspec
 
-Forms-related payload codecs and the formspec parser are in [`crate::protocol::formspec`]. The module handles the transport representation of forms and submitted fields; it is not a complete formspec renderer.
+Form-related network messages are exposed through typed message wrappers.
 
-## Server updates
+## Server-to-client messages
 
-The module decodes inventory fields, inventory formspec updates, shown forms, detached inventory updates, and formspec prepend data. Their models are [`crate::protocol::formspec::InventoryFields`], [`crate::protocol::formspec::InventoryFormspec`], [`crate::protocol::formspec::ShowFormspec`], [`crate::protocol::formspec::DetachedInventoryUpdate`], and [`crate::protocol::formspec::FormspecPrepend`] in `protocol::formspec`.
+`protocol::messages::to_client` exports `InventoryFormspec`, `ShowFormspec`,
+`DetachedInventoryUpdate`, and `FormspecPrepend`. These types implement `DecodeMessage` and consume
+a complete application message, including the command ID.
 
-## Parsed document
+## Client-to-server messages
 
-[`crate::protocol::formspec::FormspecDocument::parse`] parses a source string into `FormspecElement` values. Each element contains a name and a vector of arguments. `elements_named` provides iteration over elements matching a name.
+`protocol::messages::to_server` exports `InventoryFields` and `NodeMetadataFields`. They implement
+`EncodeMessage` and serialize submitted field values as complete application messages.
 
-## Client submissions
+## Parsed formspec documents
 
-`encode_inventory_fields` and `encode_node_metadata_fields` serialize submitted field values. The module exposes `MAX_FORMSPEC_BYTES`, derived from the split-packet payload limit in the constants module.
+`protocol::formspec::FormspecDocument::parse` parses a formspec source string into elements.
+`elements_named` iterates over elements with a matching name. Parsing is not rendering: layout,
+textures, interaction, and UI presentation belong to the client.
 
-Forms API version is declared separately in [`crate::protocol::constant::FORMSPEC_API_VERSION`]. It should not be confused with the network protocol version.
+The formspec API version is declared separately in
+`protocol::constant::FORMSPEC_API_VERSION`; it is not the network protocol version.

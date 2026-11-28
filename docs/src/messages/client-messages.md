@@ -1,15 +1,33 @@
 # Client Messages
 
-Client-to-server payload encoders are distributed by message family rather than collected into one dispatcher.
+Client-to-server application message types are exported from
+`protocol::messages::to_server`. Import `EncodeMessage` and call `.encode()` to produce the
+complete application message, including its two-byte command ID.
 
-## Player and interaction
+## Message families
 
-[`crate::protocol::player`] provides `encode_player_position`, `encode_interact`, and `encode_player_item`. Interaction data uses [`crate::protocol::player::InteractAction`] and [`crate::protocol::player::PointedThing`]. Position input is represented by [`crate::protocol::player::PlayerPositionUpdate`].
+| Family | Public message types |
+|---|---|
+| Handshake and authentication | `Init`, `Init2`, `FirstSrp`, `SrpBytesA`, `SrpBytesM`, `ClientReady` |
+| Player and interaction | `PlayerPositionUpdate`, `PlayerItem`, `Interact` |
+| Inventory and forms | `InventoryAction`, `InventoryFields`, `NodeMetadataFields` |
+| Chat and channels | `ChatMessage`, `ModChannelJoin`, `ModChannelLeave`, `ModChannelMessage` |
+| Media | `RequestMedia`, `HaveMedia` |
+| Client commands | `GotBlocks`, `DeletedBlocks`, `RemovedSounds`, `Damage`, `RespawnLegacy`, `ClientInfoUpdate` |
 
-## Other client commands
+## Example
 
-[`crate::protocol::client_commands`] provides encoders for received/deleted block acknowledgements, removed sound IDs, damage, legacy respawn, and client display information. The display-information fields are grouped in [`crate::protocol::client_commands::ClientInfoUpdate`].
+```rust,no_run
+use luanti_protocol_rs::ProtocolError;
+use luanti_protocol_rs::protocol::messages::{EncodeMessage, to_server};
 
-[`crate::protocol::chat::encode_chat_message`] encodes chat text. [`crate::protocol::inventory_action::encode_inventory_action`] encodes inventory actions. [`crate::protocol::media`] provides media request and token acknowledgement encoders. [`crate::protocol::mod_channel`] provides channel join, leave, and message encoders.
+fn send_chat() -> Result<bytes::Bytes, ProtocolError> {
+    to_server::ChatMessage {
+        message: String::from("Hello"),
+    }
+    .encode()
+}
+```
 
-Each encoder returns `Bytes` or `Result<Bytes, ProtocolError>`. A successful result is the game message payload, including its command ID; the transport layer must add MTP framing separately.
+`Bytes` contains the application message. MTP framing, sequencing, and transport delivery are
+handled by the networking layer.

@@ -1,19 +1,22 @@
 # Server Messages
 
-Server-to-client payload decoders are grouped by the data they produce. The command ID is normally dispatched by the caller before passing the command payload to the relevant decoder.
+Server-to-client application message types are exported from `protocol::messages::to_client`.
+Read the command ID with `protocol::messages::command_id` for dispatch, then pass the complete
+application message bytes to the selected type's decode trait.
 
-| Message family | Module | Representative decoder |
-|---|---|---|
-| Authentication | `messages` | `decode_auth_server_message` |
-| Chat | `chat` | `decode_chat_message` |
-| Player movement and death screen | `player` | `decode_move_player`, `decode_deathscreen_legacy` |
-| Player status | `status` | `decode_movement_parameters`, `decode_time_of_day`, `decode_player_hp` |
-| Environment and audio | `server_state` | `decode_lighting`, `decode_sky`, `decode_play_sound` |
-| HUD | `hud` | `decode_hud_add`, `decode_hud_remove`, `decode_hud_change` |
-| Particles | `particle` | `decode_spawn_particle`, `decode_add_particle_spawner` |
-| Forms | `formspec` | `decode_show_formspec`, `decode_inventory_formspec` |
-| Media | `media` | `decode_announce_media`, `decode_media_bunch`, `decode_media_push` |
-| World and definitions | `mapblock`, `nodedef`, `itemdef`, `tiledef` | Domain-specific decoders |
-| Entities | `active_object` | `decode_active_object_remove_add`, `decode_active_object_messages` |
+| Message family | Representative public types |
+|---|---|
+| Handshake and authentication | `Hello`, `AuthAccept`, `AccessDenied`, `SrpChallenge` |
+| Chat | `ChatMessage` |
+| World and definitions | `BlockDataUpdate`, `AddNodeUpdate`, `RemoveNodeUpdate`, `NodeDefinitionsUpdate`, `ItemDefinitionsUpdate` |
+| Inventory | `InventoryUpdate`, `DetachedInventoryUpdate` |
+| Media | `AnnounceMedia`, `MediaBunch`, `MediaPushUpdate` |
+| Player and status | `ServerPlayerMovement`, `LegacyDeathscreen`, `MovementParameters`, `TimeOfDayUpdate`, `HpUpdate`, `PlayerSpeedUpdate`, `PlayerBreathUpdate` |
+| HUD and environment | `HudAdd`, `HudRemove`, `HudChange`, `LightingUpdate`, `SkyUpdate`, `CameraModeUpdate`, `FovUpdate` |
+| Entities and particles | `ActiveObjectRemoveAdd`, `ActiveObjectMessagesUpdate`, `ParticleParameters`, `ParticleSpawnerParameters`, `ParticleBatchUpdate` |
+| Other state | `PrivilegesUpdate`, `PlayerListUpdate`, `MinimapModesUpdate`, `ModChannelSignal`, `ShowFormspec`, `FormspecPrepend` |
 
-Version-sensitive decoders accept the negotiated protocol version explicitly. Check each function signature in the [API reference](../api/luanti_protocol_rs/index.html) before calling it.
+Use `DecodeMessage::decode` for ordinary messages. Use
+`DecodeMessageWithProtocolVersion::decode(data, protocol_version)` or
+`DecodeMessageWithSerializationVersion::decode(data, serialization_version)` when implemented by
+the selected message type. The negotiated session version must be passed unchanged.

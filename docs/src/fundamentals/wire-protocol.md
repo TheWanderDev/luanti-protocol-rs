@@ -15,7 +15,3 @@ A game message starts with a `u16` command identifier. The identifiers are repre
 ## Version-dependent fields
 
 Several decoders accept a negotiated protocol version or serialization version explicitly. That argument controls the payload layout in those implementations; callers must pass the version negotiated with the server, not merely the maximum supported version declared by the crate. Examples include media, HUD, active objects, map blocks, item definitions, and node definitions.
-
-## Upstream reference
-
-The upstream protocol guide distinguishes high-level commands from low-level datagram framing and directs implementers to inspect the actual send and receive paths in the client and server handlers. See the [upstream network protocol guide](https://docs.luanti.org/for-engine-devs/network-protocol/).

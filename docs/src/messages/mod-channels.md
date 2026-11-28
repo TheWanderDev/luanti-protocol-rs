@@ -1,9 +1,12 @@
 # Mod Channels
 
-Mod-channel messages and signals are implemented in [`crate::protocol::mod_channel`].
+Mod-channel application messages are exposed through `protocol::messages`.
 
-`ModChannelMessage` contains the channel name, sender name, and message. `decode_mod_channel_message` reads three `string16` byte fields and converts them using lossy UTF-8 decoding. It rejects trailing bytes.
+- `protocol::messages::to_client::ModChannelMessage` decodes messages received from the server.
+- `protocol::messages::to_client::ModChannelSignal` decodes channel state notifications. Its
+  `update` field is optional because unknown signal values are represented as `None`.
+- `protocol::messages::to_server::ModChannelJoin`, `ModChannelLeave`, and `ModChannelMessage`
+  encode client requests and messages.
 
-`decode_mod_channel_signal` reads a signal code and channel name. Known signals are join success/failure, leave success/failure, channel-not-registered, and access-state update. Access states are `Initializing`, `ReadWrite`, and `ReadOnly`. Unknown signal codes or access-state values return `Ok(None)` rather than a protocol error; callers must handle that case.
-
-Outbound functions are `encode_mod_channel_join`, `encode_mod_channel_leave`, and `encode_mod_channel_message`. They prepend the corresponding client command ID and use `string16` fields.
+Use `DecodeMessage` for inbound types and `EncodeMessage` for outbound types. The wrapper types
+validate the application command ID; their lower-level payload helpers are implementation details.

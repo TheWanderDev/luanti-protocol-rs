@@ -11,6 +11,8 @@ pub const ACTIVE_OBJECT_ANIMATION_TRACK_PROTOCOL_VERSION: u16 = 53;
 pub const BONE_POSITION_ABSOLUTE_FLAG: u8 = 1 << 0;
 pub const BONE_ROTATION_ABSOLUTE_FLAG: u8 = 1 << 1;
 pub const BONE_SCALE_ABSOLUTE_FLAG: u8 = 1 << 2;
+pub const ATTACHMENT_VISIBLE_FLAG: u8 = 1 << 0;
+pub const ATTACHMENT_MOVE_CAMERA_FLAG: u8 = 1 << 1;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum GenericActiveObjectTrackId {
@@ -77,6 +79,7 @@ pub struct GenericActiveObjectAttachment {
     pub position: Vec3,
     pub rotation: Vec3,
     pub visible_on_attach: bool,
+    pub move_camera: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -635,11 +638,13 @@ pub fn decode_generic_active_object_attachment(
 
     let position = read_init_vec3(&mut reader)?;
     let rotation = read_init_vec3(&mut reader)?;
-    let visible_on_attach = if reader.is_empty() {
-        false
+    let flags = if reader.is_empty() {
+        0
     } else {
-        reader.read_u8()? != 0
+        reader.read_u8()?
     };
+    let visible_on_attach = flags & ATTACHMENT_VISIBLE_FLAG != 0;
+    let move_camera = flags & ATTACHMENT_MOVE_CAMERA_FLAG != 0;
 
     if !reader.is_empty() {
         return Err(ProtocolError::InvalidActiveObject(
@@ -653,6 +658,7 @@ pub fn decode_generic_active_object_attachment(
         position,
         rotation,
         visible_on_attach,
+        move_camera,
     })
 }
 
@@ -1245,7 +1251,9 @@ pub fn decode_generic_active_object_init(
     })
 }
 
-pub fn decode_active_object_remove_add(data: &[u8]) -> Result<ActiveObjectUpdate, ProtocolError> {
+pub(crate) fn decode_active_object_remove_add(
+    data: &[u8],
+) -> Result<ActiveObjectUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let removed_count = usize::from(reader.read_u16()?);
@@ -1302,7 +1310,7 @@ pub fn decode_active_object_remove_add(data: &[u8]) -> Result<ActiveObjectUpdate
     Ok(ActiveObjectUpdate { removed, added })
 }
 
-pub fn decode_active_object_messages(
+pub(crate) fn decode_active_object_messages(
     data: &[u8],
 ) -> Result<Vec<ActiveObjectMessage>, ProtocolError> {
     let mut reader = PacketReader::new(data);

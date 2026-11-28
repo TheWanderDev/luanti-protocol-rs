@@ -3,11 +3,12 @@ use luanti_protocol_rs::protocol::constant::{
     AUTH_MECHANISM_LEGACY_PASSWORD, AUTH_MECHANISM_SRP, MAX_PROTOCOL_VERSION, MIN_PROTOCOL_VERSION,
     SERIALIZATION_VERSION,
 };
-use luanti_protocol_rs::protocol::messages::{HelloMessage, InitMessage};
+use luanti_protocol_rs::protocol::messages::{DecodeMessage, EncodeMessage};
+use luanti_protocol_rs::{to_client::Hello, to_server::Init};
 
 #[test]
 fn init_message_matches_wire_layout_and_round_trips() {
-    let message = InitMessage {
+    let message = Init {
         player_name: "tester".to_owned(),
         protocol_min: MIN_PROTOCOL_VERSION,
         protocol_max: MAX_PROTOCOL_VERSION,
@@ -25,12 +26,12 @@ fn init_message_matches_wire_layout_and_round_trips() {
         &encoded[..expected_prefix.len()],
         expected_prefix.as_slice()
     );
-    assert_eq!(InitMessage::decode(&encoded), Ok(message));
+    assert_eq!(Init::decode(&encoded), Ok(message));
 }
 
 #[test]
 fn hello_message_matches_wire_layout_and_round_trips() {
-    let message = HelloMessage {
+    let message = Hello {
         serialization_version: SERIALIZATION_VERSION,
         protocol_version: MAX_PROTOCOL_VERSION,
         auth_mechanisms: AUTH_MECHANISM_LEGACY_PASSWORD | AUTH_MECHANISM_SRP,
@@ -45,12 +46,12 @@ fn hello_message_matches_wire_layout_and_round_trips() {
     expected.extend_from_slice(&message.auth_mechanisms.to_be_bytes());
     expected.extend_from_slice(&[0x00, 0x00]);
     assert_eq!(encoded.as_ref(), expected.as_slice());
-    assert_eq!(HelloMessage::decode(&encoded), Ok(message));
+    assert_eq!(Hello::decode(&encoded), Ok(message));
 }
 
 #[test]
 fn handshake_decoders_reject_trailing_bytes() {
-    let init = InitMessage {
+    let init = Init {
         player_name: "tester".to_owned(),
         protocol_min: MIN_PROTOCOL_VERSION,
         protocol_max: MAX_PROTOCOL_VERSION,
@@ -58,16 +59,16 @@ fn handshake_decoders_reject_trailing_bytes() {
     };
     let mut init_bytes = init.encode().unwrap_or_default().to_vec();
     init_bytes.push(0);
-    assert!(InitMessage::decode(&init_bytes).is_err());
+    assert!(Init::decode(&init_bytes).is_err());
 
-    let hello = HelloMessage {
+    let hello = Hello {
         serialization_version: SERIALIZATION_VERSION,
         protocol_version: MAX_PROTOCOL_VERSION,
         auth_mechanisms: AUTH_MECHANISM_SRP,
     };
     let mut hello_bytes = hello.encode().unwrap_or_default().to_vec();
     hello_bytes.push(0);
-    assert!(HelloMessage::decode(&hello_bytes).is_err());
+    assert!(Hello::decode(&hello_bytes).is_err());
 }
 
 #[test]

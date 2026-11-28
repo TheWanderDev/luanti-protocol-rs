@@ -1,10 +1,7 @@
 use crate::errors::ProtocolError;
-use crate::protocol::commands::ToServerCommand;
 use crate::protocol::compression::{decompress_zlib_frame, decompress_zstd_frame};
 use crate::protocol::node_metadata::{NodeMetadata, decode_node_metadata_list};
 use crate::protocol::reader::PacketReader;
-use crate::protocol::writer::PacketWriter;
-use bytes::Bytes;
 use glam::I16Vec3;
 const MAP_BLOCK_NODE_COUNT: usize = 4096;
 
@@ -75,7 +72,7 @@ pub fn decode_add_node(
     Ok((position, node, keep_metadata))
 }
 
-pub fn decode_remove_node(data: &[u8]) -> Result<I16Vec3, ProtocolError> {
+pub(crate) fn decode_remove_node(data: &[u8]) -> Result<I16Vec3, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let position = I16Vec3::new(reader.read_i16()?, reader.read_i16()?, reader.read_i16()?);
@@ -87,48 +84,6 @@ pub fn decode_remove_node(data: &[u8]) -> Result<I16Vec3, ProtocolError> {
     }
 
     Ok(position)
-}
-
-pub fn encode_deleted_blocks(positions: &[I16Vec3]) -> Result<Bytes, ProtocolError> {
-    let count = u8::try_from(positions.len()).map_err(|_| ProtocolError::InvalidBlockBatch)?;
-
-    if count == 0 {
-        return Err(ProtocolError::InvalidBlockBatch);
-    }
-
-    let mut writer = PacketWriter::new();
-
-    writer.write_u16(u16::from(ToServerCommand::DeletedBlocks));
-    writer.write_u8(count);
-
-    for position in positions {
-        writer.write_bytes(&position.x.to_be_bytes());
-        writer.write_bytes(&position.y.to_be_bytes());
-        writer.write_bytes(&position.z.to_be_bytes());
-    }
-
-    Ok(writer.into_inner())
-}
-
-pub fn encode_got_blocks(positions: &[I16Vec3]) -> Result<Bytes, ProtocolError> {
-    let count = u8::try_from(positions.len()).map_err(|_| ProtocolError::InvalidBlockBatch)?;
-
-    if count == 0 {
-        return Err(ProtocolError::InvalidBlockBatch);
-    }
-
-    let mut writer = PacketWriter::new();
-
-    writer.write_u16(u16::from(ToServerCommand::GotBlocks));
-    writer.write_u8(count);
-
-    for position in positions {
-        writer.write_bytes(&position.x.to_be_bytes());
-        writer.write_bytes(&position.y.to_be_bytes());
-        writer.write_bytes(&position.z.to_be_bytes());
-    }
-
-    Ok(writer.into_inner())
 }
 
 fn decode_node_data(

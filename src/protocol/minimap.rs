@@ -16,7 +16,7 @@ pub struct MinimapModesUpdate {
     pub selected_mode: u16,
 }
 
-pub fn decode_minimap_modes(data: &[u8]) -> Result<MinimapModesUpdate, ProtocolError> {
+pub(crate) fn decode_minimap_modes(data: &[u8]) -> Result<MinimapModesUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
     let mode_count = usize::from(reader.read_u16()?);
     let selected_mode = reader.read_u16()?;

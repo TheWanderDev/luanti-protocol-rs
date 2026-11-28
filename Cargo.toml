@@ -1,13 +1,13 @@
 [package]
 name = "luanti-protocol-rs"
-version = "0.5.182"
+version = "0.5.19-pre"
 edition = "2024"
 description = "luanti protocol rust implementation"
 license = "LGPL-3.0-only"
 readme = "README.md"
 keywords = ["protocol", "networking", "serialization", "binary", "codec"]
 categories = ["network-programming", "encoding"]
-
+repository = "https://github.com/TheWanderDev/luanti-protocol-rs"
 [dependencies]
 ahash = "0.8.12"
 base64 = "0.23.1"
@@ -26,6 +26,7 @@ tracing = "0.1.44"
 
 [dev-dependencies]
 criterion = "0.8"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
 [[bench]]
 name = "compression"

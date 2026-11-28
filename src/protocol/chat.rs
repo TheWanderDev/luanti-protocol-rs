@@ -30,7 +30,7 @@ pub struct ChatMessage {
     pub timestamp: u64,
 }
 
-pub fn decode_chat_message(data: &[u8]) -> Result<ChatMessage, ProtocolError> {
+pub(crate) fn decode_chat_message(data: &[u8]) -> Result<ChatMessage, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let version = reader.read_u8()?;
@@ -56,7 +56,7 @@ pub fn decode_chat_message(data: &[u8]) -> Result<ChatMessage, ProtocolError> {
     })
 }
 
-pub fn encode_chat_message(message: &str) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_chat_message(message: &str) -> Result<Bytes, ProtocolError> {
     let mut writer = PacketWriter::new();
 
     writer.write_u16(u16::from(ToServerCommand::ChatMessage));

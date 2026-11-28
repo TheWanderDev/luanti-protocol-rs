@@ -247,7 +247,7 @@ fn decode_legacy_sky(reader: &mut PacketReader<'_>) -> Result<SkyUpdate, Protoco
     })
 }
 
-pub fn decode_lighting(data: &[u8]) -> Result<LightingUpdate, ProtocolError> {
+pub(crate) fn decode_lighting(data: &[u8]) -> Result<LightingUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let shadow_intensity = reader.read_f32()?;
@@ -434,7 +434,7 @@ fn decode_modern_sky(reader: &mut PacketReader<'_>) -> Result<SkyUpdate, Protoco
     })
 }
 
-pub fn decode_sky(data: &[u8], protocol_version: u16) -> Result<SkyUpdate, ProtocolError> {
+pub(crate) fn decode_sky(data: &[u8], protocol_version: u16) -> Result<SkyUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     if protocol_version < 39 {
@@ -444,7 +444,7 @@ pub fn decode_sky(data: &[u8], protocol_version: u16) -> Result<SkyUpdate, Proto
     }
 }
 
-pub fn decode_local_player_animations(
+pub(crate) fn decode_local_player_animations(
     data: &[u8],
     protocol_version: u16,
 ) -> Result<LocalPlayerAnimationsUpdate, ProtocolError> {
@@ -512,7 +512,7 @@ fn read_environment_string16(reader: &mut PacketReader<'_>) -> Result<String, Pr
         .map_err(|_| ProtocolError::InvalidPlayerValue("environment string is not UTF-8"))
 }
 
-pub fn decode_day_night_ratio(data: &[u8]) -> Result<DayNightRatioUpdate, ProtocolError> {
+pub(crate) fn decode_day_night_ratio(data: &[u8]) -> Result<DayNightRatioUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let enabled = read_environment_bool(&mut reader)?;
@@ -527,7 +527,7 @@ pub fn decode_day_night_ratio(data: &[u8]) -> Result<DayNightRatioUpdate, Protoc
     Ok(DayNightRatioUpdate { enabled, ratio })
 }
 
-pub fn decode_eye_offset(data: &[u8]) -> Result<EyeOffsetUpdate, ProtocolError> {
+pub(crate) fn decode_eye_offset(data: &[u8]) -> Result<EyeOffsetUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let first_person = read_vec3_f32(&mut reader)?;
@@ -557,7 +557,7 @@ pub fn decode_eye_offset(data: &[u8]) -> Result<EyeOffsetUpdate, ProtocolError> 
     })
 }
 
-pub fn decode_cloud_params(data: &[u8]) -> Result<CloudParamsUpdate, ProtocolError> {
+pub(crate) fn decode_cloud_params(data: &[u8]) -> Result<CloudParamsUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let density = reader.read_f32()?;
@@ -594,7 +594,7 @@ pub fn decode_cloud_params(data: &[u8]) -> Result<CloudParamsUpdate, ProtocolErr
     })
 }
 
-pub fn decode_sun(data: &[u8]) -> Result<SunUpdate, ProtocolError> {
+pub(crate) fn decode_sun(data: &[u8]) -> Result<SunUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let visible = read_environment_bool(&mut reader)?;
@@ -618,7 +618,7 @@ pub fn decode_sun(data: &[u8]) -> Result<SunUpdate, ProtocolError> {
     })
 }
 
-pub fn decode_moon(data: &[u8]) -> Result<MoonUpdate, ProtocolError> {
+pub(crate) fn decode_moon(data: &[u8]) -> Result<MoonUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let visible = read_environment_bool(&mut reader)?;
@@ -638,7 +638,7 @@ pub fn decode_moon(data: &[u8]) -> Result<MoonUpdate, ProtocolError> {
     })
 }
 
-pub fn decode_stars(data: &[u8]) -> Result<StarsUpdate, ProtocolError> {
+pub(crate) fn decode_stars(data: &[u8]) -> Result<StarsUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let visible = read_environment_bool(&mut reader)?;
@@ -697,7 +697,7 @@ fn read_server_name_list(reader: &mut PacketReader<'_>) -> Result<Vec<String>, P
     Ok(names)
 }
 
-pub fn decode_play_sound(data: &[u8]) -> Result<PlaySoundUpdate, ProtocolError> {
+pub(crate) fn decode_play_sound(data: &[u8]) -> Result<PlaySoundUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let server_id = reader.read_i32()?;
@@ -752,7 +752,7 @@ pub fn decode_play_sound(data: &[u8]) -> Result<PlaySoundUpdate, ProtocolError> 
     })
 }
 
-pub fn decode_stop_sound(data: &[u8]) -> Result<StopSoundUpdate, ProtocolError> {
+pub(crate) fn decode_stop_sound(data: &[u8]) -> Result<StopSoundUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let sound_id = reader.read_i32()?;
@@ -766,7 +766,7 @@ pub fn decode_stop_sound(data: &[u8]) -> Result<StopSoundUpdate, ProtocolError> 
     Ok(StopSoundUpdate { sound_id })
 }
 
-pub fn decode_fade_sound(data: &[u8]) -> Result<FadeSoundUpdate, ProtocolError> {
+pub(crate) fn decode_fade_sound(data: &[u8]) -> Result<FadeSoundUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let sound_id = reader.read_i32()?;
@@ -792,7 +792,7 @@ pub fn decode_fade_sound(data: &[u8]) -> Result<FadeSoundUpdate, ProtocolError> 
     })
 }
 
-pub fn decode_privileges(data: &[u8]) -> Result<PrivilegesUpdate, ProtocolError> {
+pub(crate) fn decode_privileges(data: &[u8]) -> Result<PrivilegesUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
     let names = read_server_name_list(&mut reader)?;
 
@@ -805,7 +805,7 @@ pub fn decode_privileges(data: &[u8]) -> Result<PrivilegesUpdate, ProtocolError>
     Ok(PrivilegesUpdate { names })
 }
 
-pub fn decode_player_list(data: &[u8]) -> Result<PlayerListUpdate, ProtocolError> {
+pub(crate) fn decode_player_list(data: &[u8]) -> Result<PlayerListUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let operation = match reader.read_u8()? {
@@ -830,7 +830,9 @@ pub fn decode_player_list(data: &[u8]) -> Result<PlayerListUpdate, ProtocolError
     Ok(PlayerListUpdate { operation, names })
 }
 
-pub fn decode_relative_player_move(data: &[u8]) -> Result<RelativePlayerMove, ProtocolError> {
+pub(crate) fn decode_relative_player_move(
+    data: &[u8],
+) -> Result<RelativePlayerMove, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let delta = read_vec3_f32(&mut reader)?;
@@ -850,7 +852,7 @@ pub fn decode_relative_player_move(data: &[u8]) -> Result<RelativePlayerMove, Pr
     Ok(RelativePlayerMove { delta })
 }
 
-pub fn decode_fov(data: &[u8]) -> Result<FovUpdate, ProtocolError> {
+pub(crate) fn decode_fov(data: &[u8]) -> Result<FovUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let fov = reader.read_f32()?;
@@ -876,7 +878,7 @@ pub fn decode_fov(data: &[u8]) -> Result<FovUpdate, ProtocolError> {
     })
 }
 
-pub fn decode_csm_restriction_flags(
+pub(crate) fn decode_csm_restriction_flags(
     data: &[u8],
 ) -> Result<CsmRestrictionFlagsUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
@@ -890,7 +892,7 @@ pub fn decode_csm_restriction_flags(
     Ok(CsmRestrictionFlagsUpdate { flags, node_range })
 }
 
-pub fn decode_camera_mode(data: &[u8]) -> Result<CameraModeUpdate, ProtocolError> {
+pub(crate) fn decode_camera_mode(data: &[u8]) -> Result<CameraModeUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let allowed_mode = reader.read_u8()?;
@@ -901,7 +903,7 @@ pub fn decode_camera_mode(data: &[u8]) -> Result<CameraModeUpdate, ProtocolError
 
     Ok(CameraModeUpdate { allowed_mode })
 }
-pub fn decode_hud_flags(data: &[u8]) -> Result<HudFlagsUpdate, ProtocolError> {
+pub(crate) fn decode_hud_flags(data: &[u8]) -> Result<HudFlagsUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let flags = reader.read_u32()?;
@@ -914,7 +916,7 @@ pub fn decode_hud_flags(data: &[u8]) -> Result<HudFlagsUpdate, ProtocolError> {
     Ok(HudFlagsUpdate { flags, mask })
 }
 
-pub fn decode_hud_param(data: &[u8]) -> Result<HudParamUpdate, ProtocolError> {
+pub(crate) fn decode_hud_param(data: &[u8]) -> Result<HudParamUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let param = reader.read_u16()?;
@@ -927,7 +929,9 @@ pub fn decode_hud_param(data: &[u8]) -> Result<HudParamUpdate, ProtocolError> {
     Ok(HudParamUpdate { param, value })
 }
 
-pub fn decode_delete_particle_spawner(data: &[u8]) -> Result<DeleteParticleSpawner, ProtocolError> {
+pub(crate) fn decode_delete_particle_spawner(
+    data: &[u8],
+) -> Result<DeleteParticleSpawner, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let id = reader.read_u32()?;

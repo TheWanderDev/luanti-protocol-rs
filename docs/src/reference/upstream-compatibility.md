@@ -1,20 +1,27 @@
 # Upstream Compatibility
 
-Compatibility claims must be tied to the source revision being checked. The official upstream network-protocol guide describes the high-level command protocol and low-level MTP framing, and explicitly points implementers to the actual send paths in `client.cpp` and `server.cpp` and receive paths in `clientpackethandler.cpp` and `serverpackethandler.cpp` rather than relying only on the protocol header: [Network Protocol](https://docs.luanti.org/for-engine-devs/network-protocol/).
+This crate implements the binary application protocol and MTP datagram framing. Compatibility
+claims are tied to the constants and decoders in the current source, not to comments copied from
+upstream documentation.
 
-The current uploaded crate snapshot identifies itself as client version 5.18.0 and declares protocol versions 37–54, serialization version 29, and formspec API version 12. 
-## Verification method
+## Advertised versions
 
-For each command family, compare all of the following against the same upstream revision:
+- Network protocol: 37–55.
+- Serialization version: 29.
+- Formspec API version: 12.
+- Client metadata: 5.19.0-dev.
 
-1. The command ID and documented payload fields.
-2. The client/server send function that writes the payload.
-3. The opposite-side packet handler that reads it.
-4. Version guards surrounding optional fields or alternate layouts.
-5. The low-level connection implementation for packet type, channel, reliability, split, and ACK behavior.
+## Protocol 55
 
-A matching command number alone is not sufficient evidence of payload compatibility. Likewise, a decoder that accepts a payload does not establish that the server currently sends that form.
+The protocol 55 attachment extension adds the `MOVE_CAMERA` bit to the flags byte in the generic
+active-object `ATTACH_TO` payload. `0x01` represents force visibility on attach and `0x02`
+represents camera movement. The payload framing and flag-byte position remain unchanged. The
+`GenericActiveObjectAttachment` model exposes the decoded values as `visible_on_attach` and
+`move_camera`.
 
-## Current verification status
+## Compatibility discipline
 
-The source archive supplied for this review contains the Rust codec implementation but not an upstream source checkout or pinned upstream commit. Therefore, this document records the crate's declared values and the official upstream verification method; it does not label every decoder as fully upstream-verified. Record the exact upstream commit and comparison evidence here when that checkout is available.
+When updating protocol support, inspect the actual upstream sender and receiver implementations
+for the affected command, then compare the exact byte layout with the local encoder and decoder.
+Do not infer wire behavior from comments alone. Update the version constants only in the same
+change that implements and reviews the corresponding wire behavior.

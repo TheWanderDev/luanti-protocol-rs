@@ -1,3 +1,21 @@
+//! Protocol primitives, wire models, and typed application-message codecs.
+//!
+//! Prefer [`messages::to_client`] and [`messages::to_server`] for complete application messages.
+//! Their codec traits validate command identifiers and make version-dependent decoding explicit.
+//! Use the lower-level modules when a caller needs a standalone payload codec, MTP datagram
+//! framing, or access to decoded domain models.
+//!
+//! # Layer boundaries
+//!
+//! - [`packet`] handles one MTP datagram at a time. It does not reassemble split messages.
+//! - [`reader`] and [`writer`] handle primitive fields in wire order.
+//! - [`messages`] handles complete application messages and command identifiers.
+//! - Other modules provide payload models and standalone codecs for world, inventory, media,
+//!   entities, and server state.
+//!
+//! Sequence management, retransmission, ACK processing, split assembly, sockets, and session
+//! lifecycle are outside this module.
+
 pub mod active_object;
 pub mod chat;
 pub mod client_commands;

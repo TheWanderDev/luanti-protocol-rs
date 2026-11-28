@@ -58,6 +58,13 @@ pub struct InventoryFields {
     pub fields: Vec<FormspecField>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NodeMetadataFields {
+    pub position: I16Vec3,
+    pub form_name: String,
+    pub fields: Vec<FormspecField>,
+}
+
 fn read_submitted_fields(
     reader: &mut PacketReader<'_>,
 ) -> Result<Vec<FormspecField>, ProtocolError> {
@@ -79,14 +86,10 @@ fn read_submitted_fields(
     Ok(fields)
 }
 
-pub fn decode_inventory_fields(data: &[u8]) -> Result<InventoryFields, ProtocolError> {
+pub(crate) fn decode_inventory_fields_payload(
+    data: &[u8],
+) -> Result<InventoryFields, ProtocolError> {
     let mut reader = PacketReader::new(data);
-    if reader.read_u16()? != u16::from(ToServerCommand::InventoryFields) {
-        return Err(ProtocolError::InvalidFormspec(
-            "invalid inventory fields command",
-        ));
-    }
-
     let form_name = read_string16(&mut reader)?;
     let fields = read_submitted_fields(&mut reader)?;
     if !reader.is_empty() {
@@ -96,6 +99,27 @@ pub fn decode_inventory_fields(data: &[u8]) -> Result<InventoryFields, ProtocolE
     }
 
     Ok(InventoryFields { form_name, fields })
+}
+
+pub(crate) fn decode_node_metadata_fields(
+    data: &[u8],
+) -> Result<NodeMetadataFields, ProtocolError> {
+    let mut reader = PacketReader::new(data);
+    let position = I16Vec3::new(reader.read_i16()?, reader.read_i16()?, reader.read_i16()?);
+    let form_name = read_string16(&mut reader)?;
+    let fields = read_submitted_fields(&mut reader)?;
+
+    if !reader.is_empty() {
+        return Err(ProtocolError::InvalidFormspec(
+            "unexpected data after node metadata fields",
+        ));
+    }
+
+    Ok(NodeMetadataFields {
+        position,
+        form_name,
+        fields,
+    })
 }
 
 fn split_escaped_arguments(source: &str) -> Vec<&str> {
@@ -219,7 +243,7 @@ fn read_string32(reader: &mut PacketReader<'_>) -> Result<String, ProtocolError>
         .map_err(|_| ProtocolError::InvalidFormspec("formspec is not UTF-8"))
 }
 
-pub fn decode_inventory_formspec(data: &[u8]) -> Result<InventoryFormspec, ProtocolError> {
+pub(crate) fn decode_inventory_formspec(data: &[u8]) -> Result<InventoryFormspec, ProtocolError> {
     let mut reader = PacketReader::new(data);
     let formspec = read_string32(&mut reader)?;
     if !reader.is_empty() {
@@ -230,7 +254,7 @@ pub fn decode_inventory_formspec(data: &[u8]) -> Result<InventoryFormspec, Proto
     Ok(InventoryFormspec { formspec })
 }
 
-pub fn decode_show_formspec(data: &[u8]) -> Result<ShowFormspec, ProtocolError> {
+pub(crate) fn decode_show_formspec(data: &[u8]) -> Result<ShowFormspec, ProtocolError> {
     let mut reader = PacketReader::new(data);
     let formspec = read_string32(&mut reader)?;
     let form_name = read_string16(&mut reader)?;
@@ -245,7 +269,9 @@ pub fn decode_show_formspec(data: &[u8]) -> Result<ShowFormspec, ProtocolError> 
     })
 }
 
-pub fn decode_detached_inventory(data: &[u8]) -> Result<DetachedInventoryUpdate, ProtocolError> {
+pub(crate) fn decode_detached_inventory(
+    data: &[u8],
+) -> Result<DetachedInventoryUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
     let name = read_string16(&mut reader)?;
     let keep_inventory = reader.read_u8()? != 0;
@@ -269,7 +295,7 @@ pub fn decode_detached_inventory(data: &[u8]) -> Result<DetachedInventoryUpdate,
     })
 }
 
-pub fn decode_formspec_prepend(data: &[u8]) -> Result<FormspecPrepend, ProtocolError> {
+pub(crate) fn decode_formspec_prepend(data: &[u8]) -> Result<FormspecPrepend, ProtocolError> {
     let mut reader = PacketReader::new(data);
     let formspec = read_string16(&mut reader)?;
     if !reader.is_empty() {
@@ -292,7 +318,7 @@ fn put_fields(writer: &mut PacketWriter, fields: &[FormspecField]) -> Result<(),
     Ok(())
 }
 
-pub fn encode_inventory_fields(
+pub(crate) fn encode_inventory_fields(
     form_name: &str,
     fields: &[FormspecField],
 ) -> Result<Bytes, ProtocolError> {
@@ -303,7 +329,7 @@ pub fn encode_inventory_fields(
     Ok(writer.into_inner())
 }
 
-pub fn encode_node_metadata_fields(
+pub(crate) fn encode_node_metadata_fields(
     position: I16Vec3,
     form_name: &str,
     fields: &[FormspecField],

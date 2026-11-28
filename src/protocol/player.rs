@@ -14,7 +14,9 @@ pub struct LegacyDeathscreen {
     pub camera_point_target: Vec3,
 }
 
-pub fn decode_deathscreen_legacy(payload: &[u8]) -> Result<LegacyDeathscreen, ProtocolError> {
+pub(crate) fn decode_deathscreen_legacy(
+    payload: &[u8],
+) -> Result<LegacyDeathscreen, ProtocolError> {
     let mut reader = PacketReader::new(payload);
     let set_camera_point_target = match reader.read_u8()? {
         0 => false,
@@ -114,7 +116,7 @@ fn encode_pointed_thing(pointed: PointedThing) -> Result<Bytes, ProtocolError> {
     Ok(writer.into_inner())
 }
 
-pub fn encode_interact(
+pub(crate) fn encode_interact(
     action: InteractAction,
     wield_index: u16,
     pointed: PointedThing,
@@ -143,7 +145,7 @@ pub fn encode_interact(
 }
 
 #[must_use]
-pub fn encode_player_item(index: u16) -> Bytes {
+pub(crate) fn encode_player_item(index: u16) -> Bytes {
     let mut writer = PacketWriter::new();
 
     writer.write_u16(u16::from(ToServerCommand::PlayerItem));
@@ -186,7 +188,7 @@ fn write_scaled_vec3(
     Ok(())
 }
 
-pub fn decode_move_player(payload: &[u8]) -> Result<ServerPlayerMovement, ProtocolError> {
+pub(crate) fn decode_move_player(payload: &[u8]) -> Result<ServerPlayerMovement, ProtocolError> {
     let mut reader = PacketReader::new(payload);
 
     let position = Vec3::new(reader.read_f32()?, reader.read_f32()?, reader.read_f32()?);
@@ -227,7 +229,9 @@ fn write_player_position_base(
     Ok(())
 }
 
-pub fn encode_player_position(update: &PlayerPositionUpdate) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_player_position(
+    update: &PlayerPositionUpdate,
+) -> Result<Bytes, ProtocolError> {
     if !update.movement_speed.is_finite() || !update.movement_direction.is_finite() {
         return Err(ProtocolError::InvalidPlayerValue("movement"));
     }

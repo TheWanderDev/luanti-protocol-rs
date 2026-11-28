@@ -368,7 +368,7 @@ fn read_texture_pool_entry(
     })
 }
 
-pub fn decode_spawn_particle(data: &[u8]) -> Result<ParticleParameters, ProtocolError> {
+pub(crate) fn decode_spawn_particle(data: &[u8]) -> Result<ParticleParameters, ProtocolError> {
     let mut reader = PacketReader::new(data);
     let position = read_finite_vec3(&mut reader)?;
     let velocity = read_finite_vec3(&mut reader)?;
@@ -431,7 +431,7 @@ pub fn decode_spawn_particle(data: &[u8]) -> Result<ParticleParameters, Protocol
     }
 
     if !reader.is_empty() {
-        let properties = read_texture_properties(&mut reader, texture.name.clone(), false)?;
+        let properties = read_texture_properties(&mut reader, texture.name.clone(), true)?;
         texture = properties;
     }
 
@@ -465,7 +465,7 @@ pub fn decode_spawn_particle(data: &[u8]) -> Result<ParticleParameters, Protocol
     })
 }
 
-pub fn decode_add_particle_spawner(
+pub(crate) fn decode_add_particle_spawner(
     data: &[u8],
     protocol_version: u16,
 ) -> Result<ParticleSpawnerParameters, ProtocolError> {
@@ -705,7 +705,9 @@ pub fn decode_add_particle_spawner(
     })
 }
 
-pub fn decode_spawn_particle_batch(data: &[u8]) -> Result<Vec<ParticleParameters>, ProtocolError> {
+pub(crate) fn decode_spawn_particle_batch(
+    data: &[u8],
+) -> Result<Vec<ParticleParameters>, ProtocolError> {
     let mut packet_reader = PacketReader::new(data);
     let compressed = packet_reader.read_string32()?;
 

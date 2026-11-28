@@ -1,22 +1,18 @@
-use luanti_protocol_rs::protocol::active_object::{
+use crate::protocol::active_object::{
     decode_active_object_messages, decode_active_object_remove_add,
     decode_generic_active_object_init, decode_generic_active_object_message,
 };
-use luanti_protocol_rs::protocol::formspec::{
+use crate::protocol::formspec::{
     decode_detached_inventory, decode_formspec_prepend, decode_inventory_formspec,
     decode_show_formspec,
 };
-use luanti_protocol_rs::protocol::hud::{decode_hud_add, decode_hud_change, decode_hud_remove};
-use luanti_protocol_rs::protocol::inventory::decode_inventory;
-use luanti_protocol_rs::protocol::itemdef::decode_item_def;
-use luanti_protocol_rs::protocol::mapblock::{
-    decode_add_node, decode_map_block, decode_remove_node,
-};
-use luanti_protocol_rs::protocol::media::{decode_announce_media, decode_media_bunch};
-use luanti_protocol_rs::protocol::node_metadata::{
-    decode_node_metadata_changed, decode_node_metadata_list,
-};
-use luanti_protocol_rs::protocol::nodedef::decode_node_def;
+use crate::protocol::hud::{decode_hud_add, decode_hud_change, decode_hud_remove};
+use crate::protocol::inventory::decode_inventory;
+use crate::protocol::itemdef::decode_item_def;
+use crate::protocol::mapblock::{decode_add_node, decode_map_block, decode_remove_node};
+use crate::protocol::media::{decode_announce_media, decode_media_bunch};
+use crate::protocol::node_metadata::{decode_node_metadata_changed, decode_node_metadata_list};
+use crate::protocol::nodedef::decode_node_def;
 
 #[test]
 fn mapblock_and_node_payload_decoders_reject_empty_input() {
@@ -51,4 +47,4 @@ fn formspec_and_active_object_decoders_reject_empty_input() {
     assert_eq!(decode_active_object_messages(&[]), Ok(Vec::new()));
 }
 
-/* perhaps we can continue another time XD */
+/*next time maybe*/

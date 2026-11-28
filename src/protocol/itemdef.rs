@@ -1043,7 +1043,7 @@ pub fn encode_item_def(
     Ok(packet.into_inner())
 }
 
-pub fn decode_item_def(
+pub(crate) fn decode_item_def(
     data: &[u8],
     protocol_version: u16,
 ) -> Result<DecodedItemDefinitions, ProtocolError> {

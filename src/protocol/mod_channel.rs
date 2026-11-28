@@ -34,7 +34,7 @@ pub struct ModChannelSignalUpdate {
     pub signal: ModChannelSignalKind,
 }
 
-pub fn decode_mod_channel_message(data: &[u8]) -> Result<ModChannelMessage, ProtocolError> {
+pub(crate) fn decode_mod_channel_message(data: &[u8]) -> Result<ModChannelMessage, ProtocolError> {
     let mut reader = PacketReader::new(data);
     let channel = decode_string(reader.read_string16()?);
     let sender = decode_string(reader.read_string16()?);
@@ -53,7 +53,7 @@ pub fn decode_mod_channel_message(data: &[u8]) -> Result<ModChannelMessage, Prot
     })
 }
 
-pub fn decode_mod_channel_signal(
+pub(crate) fn decode_mod_channel_signal(
     data: &[u8],
 ) -> Result<Option<ModChannelSignalUpdate>, ProtocolError> {
     let mut reader = PacketReader::new(data);
@@ -92,11 +92,11 @@ fn decode_string(value: &[u8]) -> String {
     String::from_utf8_lossy(value).into_owned()
 }
 
-pub fn encode_mod_channel_join(channel: &str) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_mod_channel_join(channel: &str) -> Result<Bytes, ProtocolError> {
     encode_mod_channel_name(ToServerCommand::ModChannelJoin, channel)
 }
 
-pub fn encode_mod_channel_leave(channel: &str) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_mod_channel_leave(channel: &str) -> Result<Bytes, ProtocolError> {
     encode_mod_channel_name(ToServerCommand::ModChannelLeave, channel)
 }
 
@@ -110,7 +110,10 @@ fn encode_mod_channel_name(
     Ok(writer.into_inner())
 }
 
-pub fn encode_mod_channel_message(channel: &str, message: &str) -> Result<Bytes, ProtocolError> {
+pub(crate) fn encode_mod_channel_message(
+    channel: &str,
+    message: &str,
+) -> Result<Bytes, ProtocolError> {
     let mut writer = PacketWriter::with_capacity(8 + channel.len() + message.len());
     writer.write_u16(u16::from(ToServerCommand::ModChannelMessage));
     writer.write_string16(channel)?;

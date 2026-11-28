@@ -704,7 +704,7 @@ impl Inventory {
     }
 }
 
-pub fn decode_inventory(
+pub(crate) fn decode_inventory(
     data: &[u8],
     protocol_version: u16,
 ) -> Result<InventoryUpdate, ProtocolError> {

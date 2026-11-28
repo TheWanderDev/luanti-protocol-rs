@@ -20,7 +20,7 @@ pub struct MovementParameters {
     pub gravity: f32,
 }
 
-pub fn decode_movement_parameters(data: &[u8]) -> Result<MovementParameters, ProtocolError> {
+pub(crate) fn decode_movement_parameters(data: &[u8]) -> Result<MovementParameters, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let parameters = MovementParameters {
@@ -85,7 +85,7 @@ pub struct PlayerSpeedUpdate {
     pub added_velocity: Vec3,
 }
 
-pub fn decode_time_of_day(data: &[u8]) -> Result<TimeOfDayUpdate, ProtocolError> {
+pub(crate) fn decode_time_of_day(data: &[u8]) -> Result<TimeOfDayUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let time = reader.read_u16()?;
@@ -107,7 +107,7 @@ pub fn decode_time_of_day(data: &[u8]) -> Result<TimeOfDayUpdate, ProtocolError>
     })
 }
 
-pub fn decode_player_hp(data: &[u8]) -> Result<HpUpdate, ProtocolError> {
+pub(crate) fn decode_player_hp(data: &[u8]) -> Result<HpUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let hp = reader.read_u16()?;
@@ -125,7 +125,7 @@ pub fn decode_player_hp(data: &[u8]) -> Result<HpUpdate, ProtocolError> {
     Ok(HpUpdate { hp, damage_effect })
 }
 
-pub fn decode_player_breath(data: &[u8]) -> Result<u16, ProtocolError> {
+pub(crate) fn decode_player_breath(data: &[u8]) -> Result<u16, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let breath = reader.read_u16()?;
@@ -137,7 +137,7 @@ pub fn decode_player_breath(data: &[u8]) -> Result<u16, ProtocolError> {
     Ok(breath)
 }
 
-pub fn decode_player_speed(data: &[u8]) -> Result<PlayerSpeedUpdate, ProtocolError> {
+pub(crate) fn decode_player_speed(data: &[u8]) -> Result<PlayerSpeedUpdate, ProtocolError> {
     let mut reader = PacketReader::new(data);
 
     let added_velocity = read_vec3_f32(&mut reader)?;

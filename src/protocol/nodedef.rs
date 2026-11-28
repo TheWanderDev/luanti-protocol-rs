@@ -642,7 +642,7 @@ pub fn encode_node_def(
     Ok(packet.into_inner())
 }
 
-pub fn decode_node_def(
+pub(crate) fn decode_node_def(
     data: &[u8],
     protocol_version: u16,
 ) -> Result<Vec<NodeDefinition>, ProtocolError> {

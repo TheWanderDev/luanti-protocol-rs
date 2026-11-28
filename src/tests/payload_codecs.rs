@@ -1,13 +1,11 @@
-use luanti_protocol_rs::errors::ProtocolError;
-use luanti_protocol_rs::protocol::chat::{
+use crate::errors::ProtocolError;
+use crate::protocol::chat::{
     ChatMessage, ChatMessageType, decode_chat_message, encode_chat_message,
 };
-use luanti_protocol_rs::protocol::inventory_action::{
+use crate::protocol::inventory_action::{
     InventoryAction, InventoryLocation, encode_inventory_action,
 };
-use luanti_protocol_rs::protocol::status::{
-    decode_movement_parameters, decode_player_hp, decode_time_of_day,
-};
+use crate::protocol::status::{decode_movement_parameters, decode_player_hp, decode_time_of_day};
 
 #[test]
 fn chat_decoder_matches_wire_fixture() {

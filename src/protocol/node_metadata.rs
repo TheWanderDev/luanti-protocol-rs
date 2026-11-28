@@ -206,7 +206,9 @@ pub fn decode_node_metadata_list(
     Ok(metadata)
 }
 
-pub fn decode_node_metadata_changed(payload: &[u8]) -> Result<Vec<NodeMetadata>, ProtocolError> {
+pub(crate) fn decode_node_metadata_changed(
+    payload: &[u8],
+) -> Result<Vec<NodeMetadata>, ProtocolError> {
     let mut reader = PacketReader::new(payload);
 
     let compressed_length =

@@ -1,13 +1,18 @@
 # Player State and Interaction
 
-Player-related codecs are in [`crate::protocol::player`]. The module includes inbound movement/death-screen decoders and outbound player input encoders.
+Player-related application messages are grouped by direction.
 
-## Server-to-client data
+## Server-to-client
 
-`decode_move_player` returns [`crate::protocol::player::ServerPlayerMovement`], containing position, pitch, and yaw. The decoder converts the wire angles to radians and applies the pitch sign conversion present in the implementation. `decode_deathscreen_legacy` returns a camera target flag and position.
+`protocol::messages::to_client` exports `ServerPlayerMovement`, `LegacyDeathscreen`,
+`MovementParameters`, `TimeOfDayUpdate`, `HpUpdate`, `PlayerSpeedUpdate`, `PlayerBreathUpdate`, and
+`LocalPlayerAnimationsUpdate`. Use each type's implemented decode trait.
 
-## Client-to-server data
+## Client-to-server
 
-[`crate::protocol::player::PlayerPositionUpdate`] contains position, speed, pitch, yaw, pressed-key flags, FOV, wanted range, camera inversion, movement speed, and movement direction. `encode_player_position` serializes this state. The current implementation scales positional and angular values before writing integer fields and rejects invalid or out-of-range values.
+`protocol::messages::to_server` exports `PlayerPositionUpdate`, `PlayerItem`, and `Interact`.
+These types implement `EncodeMessage`. `Interact` combines an interaction action, wield index,
+pointed target, and player movement state.
 
-`encode_interact` combines an [`crate::protocol::player::InteractAction`], wield index, [`crate::protocol::player::PointedThing`], and player update. `PointedThing` supports no target, a node target with under/above positions, or an object ID. `encode_player_item` selects a wield index.
+The public message wrappers encode or decode complete application messages. They do not update a
+local player simulation or render player state.

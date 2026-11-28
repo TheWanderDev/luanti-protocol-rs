@@ -1,5 +1,9 @@
 use thiserror::Error;
 
+/// Structured failures returned by MTP packet and application-payload codecs.
+///
+/// Variants distinguish malformed wire data from unsupported protocol features and invalid
+/// domain values. A caller should stop decoding the current packet after receiving an error.
 #[derive(Debug, Error, PartialEq)]
 pub enum ProtocolError {
     #[error("packet is truncated")]

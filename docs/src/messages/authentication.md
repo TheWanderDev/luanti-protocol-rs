@@ -1,21 +1,56 @@
 # Connection and Authentication Messages
 
-Handshake payload structures and selected encoders/decoders are in [`crate::protocol::messages`]. This module handles protocol message serialization; it does not calculate SRP proofs or perform cryptographic key exchange.
+Handshake message types are grouped by direction. The crate serializes and parses protocol
+messages; SRP proof calculation and cryptographic key exchange belong to the authentication layer.
 
-## Outbound messages
+## Client to server
 
-- `encode_init2(language)` serializes the second initialization message.
-- `encode_first_srp` creates the first-SRP message payload.
-- `encode_srp_bytes_a(public_a, legacy_password)` serializes the client public value and legacy-mode flag.
-- `encode_srp_bytes_m(proof)` serializes the client proof.
-- `encode_client_ready()` creates the client-ready message.
+Types are exported from `protocol::messages::to_server`:
 
-## Inbound messages
+- `Init` advertises the player's name, protocol range, and serialization version.
+- `Init2` acknowledges the initial server handshake and carries the language string.
+- `FirstSrp`, `SrpBytesA`, and `SrpBytesM` carry the corresponding first-SRP and SRP exchange data.
+- `ClientReady` announces the client version and supported formspec API version.
 
-`decode_auth_accept_payload` returns [`crate::protocol::messages::AuthAcceptData`], containing the map seed, recommended send interval, and sudo authentication mechanisms. `decode_access_denied_payload`, `decode_sudo_mode_payload`, and `decode_sudo_mode_denial` decode their respective payloads. `decode_auth_server_message` reads the command ID and returns [`crate::protocol::messages::AuthServerMessage`].
+These messages implement `EncodeMessage`; call `.encode()` to obtain the complete application
+message, including its command ID.
 
-The module also exposes [`crate::protocol::messages::InitMessage`] and [`crate::protocol::messages::HelloMessage`] as typed handshake data structures.
+## Server to client
 
-## Authentication mechanism flags
+Types are exported from `protocol::messages::to_client`:
 
-The bit flags are declared in [`crate::protocol::constant`]: legacy password, SRP, and first-SRP. The application layer selects a mechanism supported by both peers and performs the associated cryptographic exchange.
+- `Hello` contains the selected protocol version, serialization version, and authentication
+  mechanism flags.
+- `AuthAccept` contains the map seed, recommended send interval, and sudo authentication flags.
+- `AccessDenied` and `AccessDeniedLegacy` represent denial responses.
+- `AcceptSudoMode`, `DenySudoMode`, and `SrpChallenge` represent subsequent authentication state.
+
+These message types implement the appropriate decode trait. Use `DecodeMessage::decode` for
+messages without a separate version argument.
+
+## Example
+
+```rust,no_run
+use luanti_protocol_rs::ProtocolError;
+use luanti_protocol_rs::protocol::messages::{DecodeMessage, EncodeMessage, to_client, to_server};
+
+fn make_init() -> Result<bytes::Bytes, ProtocolError> {
+    to_server::Init {
+        player_name: String::from("player"),
+        protocol_min: 37,
+        protocol_max: 55,
+        serialization_version: 29,
+    }
+    .encode()
+}
+
+fn read_hello(data: &[u8]) -> Result<to_client::Hello, ProtocolError> {
+    to_client::Hello::decode(data)
+}
+```
+
+## Mechanism flags
+
+Authentication mechanism constants are declared in `protocol::constant`. The client selects a
+mechanism supported by both peers and performs the corresponding cryptographic exchange outside
+this codec crate.

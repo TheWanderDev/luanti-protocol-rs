@@ -2,6 +2,7 @@
 # Summary
 
 [Overview](index.md)
+- [AI-Oriented API Guide](ai-guide.md)
 
 # Fundamentals
 
@@ -16,6 +17,7 @@
 # Protocol Messages
 
 - [Connection and Authentication](messages/authentication.md)
+- [Typed Application Messages](messages/message-traits.md)
 - [Client Messages](messages/client-messages.md)
 - [Server Messages](messages/server-messages.md)
 - [Chat](messages/chat.md)

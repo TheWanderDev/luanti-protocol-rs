@@ -1,9 +1,18 @@
 # Active Objects
 
-Active-object payload structures and decoders are in [`crate::protocol::active_object`]. The module represents object creation/removal batches, per-object messages, generic-object initialization, and the generic-object command stream.
+Active-object network updates are exposed through `protocol::messages::to_client`.
 
-`decode_active_object_remove_add` returns [`crate::protocol::active_object::ActiveObjectUpdate`] with removed IDs and added [`crate::protocol::active_object::ActiveObjectData`] entries. `decode_active_object_messages` decodes updates addressed to object IDs. `decode_generic_active_object_init` returns [`crate::protocol::active_object::GenericActiveObjectInit`], while `decode_generic_active_object_message` separates a command ID from its payload.
+- `ActiveObjectRemoveAdd` decodes object additions and removals.
+- `ActiveObjectMessagesUpdate` decodes updates addressed to active-object IDs.
 
-The generic object model includes properties, position updates, armor groups, animations, bone transforms, attachments, physics overrides, infant references, sprites, nametag attributes, and texture modifiers. `GenericActiveObjectState` collects the decoded state. `GenericActiveObjectCommandKind` and `GenericActiveObjectTrackId` describe command and animation-track categories.
+The associated payload models and standalone codecs are defined in `protocol::active_object`.
+Generic-object state commands include attachment, animation, bone, property, and texture updates.
 
-Some command formats depend on protocol version. The source declares version thresholds for stop-animation and animation-track support. Pass the negotiated protocol version to the relevant decoders and retain unknown extension bytes where the model exposes them.
+## Protocol 55 attachment flags
+
+`GenericActiveObjectAttachment` exposes `visible_on_attach` and `move_camera`. The attachment
+flags byte uses bit `0x01` for visibility and bit `0x02` for camera movement. Protocol 37–54 retain
+the visibility-only interpretation; the decoder extracts the two flags independently.
+
+The crate parses attachment state but does not manage scene hierarchy, camera transforms, or
+rendering.
