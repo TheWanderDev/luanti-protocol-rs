@@ -7,14 +7,16 @@ on:
     paths:
       - "Cargo.toml"
       - "Cargo.lock"
-      - "crates/**"
+      - "src/**"
+      - "docs/**"
       - ".github/workflows/docs.yml"
   pull_request:
     branches: [main]
     paths:
       - "Cargo.toml"
       - "Cargo.lock"
-      - "crates/**"
+      - "src/**"
+      - "docs/**"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -47,19 +49,19 @@ jobs:
 
       - name: Integrate Rustdoc into mdBook source
         run: |
-          rm -rf crates/luanti-protocol-rs/docs/src/api
-          mkdir -p crates/luanti-protocol-rs/docs/src/api
-          cp -a target/doc/. crates/luanti-protocol-rs/docs/src/api/
+          rm -rf docs/src/api
+          mkdir -p docs/src/api
+          cp -a target/doc/. docs/src/api/
 
       - name: Build mdBook
-        working-directory: crates/luanti-protocol-rs/docs
+        working-directory: docs
         run: mdbook build
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5.0.0
         with:
-          path: crates/luanti-protocol-rs/docs/book
+          path: docs/book
 
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
