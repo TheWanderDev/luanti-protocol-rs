@@ -14,13 +14,14 @@ pub fn active_objects(data: &[u8]) {
     use crate::protocol::active_object::{
         decode_active_object_messages, decode_active_object_remove_add,
         decode_generic_active_object_animation, decode_generic_active_object_animation_speed,
-        decode_generic_active_object_attachment, decode_generic_active_object_armor_groups,
+        decode_generic_active_object_armor_groups, decode_generic_active_object_attachment,
         decode_generic_active_object_bone_position, decode_generic_active_object_hp_update,
         decode_generic_active_object_infant, decode_generic_active_object_init,
         decode_generic_active_object_message, decode_generic_active_object_nametag_attributes,
-        decode_generic_active_object_physics_override, decode_generic_active_object_position_update,
-        decode_generic_active_object_sprite, decode_generic_active_object_stop_animation,
-        decode_generic_active_object_texture_modifier, decode_generic_object_properties,
+        decode_generic_active_object_physics_override,
+        decode_generic_active_object_position_update, decode_generic_active_object_sprite,
+        decode_generic_active_object_stop_animation, decode_generic_active_object_texture_modifier,
+        decode_generic_object_properties,
     };
 
     for version in 37..=54 {
