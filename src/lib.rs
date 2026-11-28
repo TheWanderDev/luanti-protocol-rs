@@ -31,6 +31,10 @@ pub use protocol::messages::to_client;
 /// Application messages sent by a client to a server.
 pub use protocol::messages::to_server;
 
+#[cfg(feature = "fuzzing")]
+#[doc(hidden)]
+pub mod fuzz;
+
 pub use errors::ProtocolError;
 
 #[cfg(test)]

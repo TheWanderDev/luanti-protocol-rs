@@ -9,6 +9,10 @@ use luanti_protocol_rs::protocol::messages::{
 use luanti_protocol_rs::{to_client, to_server};
 
 fuzz_target!(|data: &[u8]| {
+    if data.len() > 1_048_576 {
+        return;
+    }
+
     let _ = command_id(data);
     let _ = to_server::Init::decode(data);
     let _ = to_client::Hello::decode(data);
