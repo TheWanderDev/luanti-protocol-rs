@@ -404,8 +404,17 @@ def load_rustdoc_json(json_path):
 
 def prepare_api_directory(book_root, rustdoc_root):
     destination = book_root / "src" / API_DIRECTORY
+    static_root = rustdoc_root.parent / "static.files"
+    if not static_root.is_dir():
+        raise FileNotFoundError(f"Rustdoc static files tidak ditemukan: {static_root}")
+
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(rustdoc_root, destination, dirs_exist_ok=True)
+    shutil.copytree(
+        static_root,
+        destination.parent / "static.files",
+        dirs_exist_ok=True,
+    )
     return destination
 
 

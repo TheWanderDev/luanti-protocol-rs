@@ -44,16 +44,7 @@ jobs:
       - name: Install mdBook
         run: cargo +stable install mdbook --locked
 
-      - name: Generate Rust API documentation
-        run: cargo +stable doc --no-deps --lib
-
-      - name: Integrate Rustdoc into mdBook source
-        run: |
-          rm -rf docs/src/api
-          mkdir -p docs/src/api
-          cp -a target/doc/. docs/src/api/
-
-      - name: Build mdBook
+      - name: Build mdBook and Rust API documentation
         working-directory: docs
         run: mdbook build
 
